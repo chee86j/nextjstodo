@@ -2,6 +2,10 @@ import { prisma } from "@/db"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 
+/*  Next.js routing function is based on the file system.
+    The /new route is defined in src/app/new/page.tsx.
+*/
+
 async function createTodo(data: FormData) {
   "use server"
 
