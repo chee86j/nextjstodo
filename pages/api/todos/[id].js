@@ -41,3 +41,31 @@ export default async function handler(req, res) {
         res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 }
+
+/* Dynamic API Routes: Next.js supports dynamic routing, and this feature extends 
+to API routes. The [id].js file creates a dynamic route (/api/todos/:id), where 
+:id is a variable part of the URL. This allows you to handle requests for specific 
+todos based on their unique identifier.
+
+Serverless Function per Endpoint: Similar to other API routes in Next.js, this file 
+represents a serverless function that handles requests to a specific endpoint. This 
+serverless architecture is ideal for scalability and efficiency.
+
+Handling Different HTTP Methods: The file demonstrates handling multiple HTTP methods 
+(GET, PUT, DELETE) within a single API route. This is a powerful feature for creating 
+RESTful APIs where different methods on the same URL perform different operations:
+
+    GET for fetching a specific todo.
+    PUT for updating a specific todo.
+    DELETE for deleting a specific todo.
+
+Prisma for Database Operations: The integration with Prisma ORM makes database 
+interactions straightforward. Your code efficiently handles different database 
+based on the request method, showcasing how Next.js works seamlessly with external 
+libraries and databases.
+
+Query Parameters: Next.js automatically parses and provides query parameters (in 
+this case, id from the route /api/todos/[id]). This is used to perform operations 
+on a specific resource, demonstrating Next.js's easy handling of dynamic data.
+
+*/
