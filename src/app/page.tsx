@@ -15,8 +15,10 @@ export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  // Manages its own state and lifecycle, allowing for dynamic and interactive user interfaces. This is a key strength of React used within a Next.js framework.
 
   // Define fetchTodos inside the component scope
+  // Client-side data fetching, where you make an HTTP request to your own Next.js API route.
   const fetchTodos = async () => {
     try {
       const response = await fetch('/api/todos');
@@ -75,6 +77,7 @@ export default function Home() {
     <>
       <header className="flex justify-between items-center mb-4">
         <h1 className="text-2xl">Todos</h1>
+        {/* integration with Next.js's built-in routing system. This allows for client-side transitions to different pages without a full page reload. */}
         <Link
           className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700 focus-within:bg-slate-700 outline-none"
           href="/new"
