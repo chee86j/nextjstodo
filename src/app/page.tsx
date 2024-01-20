@@ -1,9 +1,10 @@
-"use client"
+"use client" // to run code on the client side. this is necessary for hooks like useEffect and useState
 
 import { TodoItem } from "@/components/TodoItem";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+// Define the Todo type
 type Todo = {
   id: string;
   title: string;
