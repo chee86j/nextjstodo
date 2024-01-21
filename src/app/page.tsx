@@ -52,7 +52,23 @@ export default function Home() {
   }, []);
 
   const toggleTodo = async (id: string, complete: boolean) => {
-    // Existing toggleTodo implementation
+    try {
+      const response = await fetch(`/api/todos/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ complete }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to toggle todo');
+      }
+      await fetchTodos();
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error(err.message);
+      }
+    }
   };
 
   const handleCreateTodo = async (event: React.FormEvent) => {

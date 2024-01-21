@@ -1,5 +1,3 @@
-"use client"
-
 import React, { useState } from 'react';
 
 type TodoItemProps = {
@@ -27,7 +25,7 @@ export function TodoItem({ id, title, complete, toggleTodo, onEdit, onDelete }: 
         type="checkbox"
         className="cursor-pointer peer"
         checked={complete}
-        onChange={(e) => toggleTodo(id, e.target.checked)}
+        onChange={() => toggleTodo(id, !complete)} // Toggle the complete state
       />
       {isEditing ? (
         <input 
@@ -42,14 +40,17 @@ export function TodoItem({ id, title, complete, toggleTodo, onEdit, onDelete }: 
         </label>
       )}
       {isEditing ? (
-        <button onClick={handleSave} className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700 focus-within:bg-slate-700 outline-none"
-        >Save</button>
+        <button onClick={handleSave} className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700 focus-within:bg-slate-700 outline-none">
+          Save
+        </button>
       ) : (
-        <button onClick={() => setIsEditing(true)} className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700 focus-within:bg-slate-700 outline-none"
-        >Edit</button>
+        <button onClick={() => setIsEditing(true)} className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700 focus-within:bg-slate-700 outline-none">
+          Edit
+        </button>
       )}
-      <button onClick={() => onDelete(id)} className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700 focus-within:bg-slate-700 outline-none"
->Delete</button>
+      <button onClick={() => onDelete(id)} className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700 focus-within:bg-slate-700 outline-none">
+        Delete
+      </button>
     </li>
   );
 }
