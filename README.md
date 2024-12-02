@@ -10,13 +10,15 @@ This advanced Todo application is built with Next.js and utilizes Prisma as an O
 - **Due Dates and Recurrence:** Schedule tasks with due dates and set up recurring tasks to keep track of deadlines.
 - **Attachments:** Attach URLs for additional resources directly to tasks.
 - **API Endpoints:** Utilize separate endpoints for fetching all todos and managing specific CRUD operations.
+- **Accessibility:** Features aria-label attributes and semantic HTML for improved usability.
+- **Dynamic UI Updates:** Real-time task updates using optimized state management.
 
 ## Technology Stack
-- **Frontend:** Next.js 14.1.0
-- **Backend:** Prisma 5.8.1
+- **Frontend:** Next.js 15.03
+- **Backend:** Prisma 6.00
 - **Database:** SQLite
-- **Styling:** Tailwind CSS 3.3.0
-- **Development Tools:** TypeScript 5, ESLint 8, PostCSS 8, Autoprefixer 10.0.1
+- **Styling:** Tailwind CSS 3.4.15
+- **Development Tools:** TypeScript 5, ESLint 9, PostCSS 8, Autoprefixer 10.4.20
 
 ## Getting Started
 
@@ -24,6 +26,8 @@ This advanced Todo application is built with Next.js and utilizes Prisma as an O
 Ensure you have the following installed:
 - **Node.js (v16 or above)**: Check your version by running `node -v`.
 - **npm or yarn**: Check installation by running `npm -v` or `yarn -v`.
+
+
 
 ### Installation
 1. **Clone the repository**
@@ -65,3 +69,26 @@ Ensure you have the following installed:
     yarn dev
     ```
     Navigate to [http://localhost:3000](http://localhost:3000) to interact with the application.
+
+### Project Structure
+    - src/app/: Contains application routes and page logic.
+        - page.tsx: Displays and manages all todos.
+        - new/page.tsx: Handles the creation of new todos.
+    - src/components/: Contains reusable UI components.
+        - TodoItem.tsx: Represents individual todo items.
+        - Modal.tsx: Provides a modal for editing todos.
+    - prisma/schema.prisma: Defines the database schema.
+    - pages/api/todos: Contains API endpoints for CRUD operations.
+
+### API Endpoints
+    - GET /api/todos: Fetch all todos.
+    - POST /api/todos: Create a new todo.
+    - PUT /api/todos/:id: Update an existing todo.
+    - DELETE /api/todos/:id: Delete a todo.
+
+### Key Enhancements
+    - Added dynamic form validation and error handling to prevent invalid submissions.
+    - Improved state management with isSaving and isLoading flags.
+    - Optimized accessibility with semantic HTML and aria-label attributes.
+    - Enhanced UI for better user experience, including modals for editing todos.
+    - Centralized form reset logic for maintainability.

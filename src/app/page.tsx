@@ -14,9 +14,9 @@ type Todo = {
   title: string;
   complete: boolean;
   priority: string;
-  tags: string[];
-  dueDate?: string; 
-  recurrence?: string; 
+  tags: { id: string; name: string }[];
+  dueDate?: string;
+  recurrence?: string;
   attachmentUrl?: string;
 };
 
@@ -24,6 +24,7 @@ export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodoTitle, setNewTodoTitle] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [currentTodo, setCurrentTodo] = useState<Todo | null>(null);
@@ -31,7 +32,7 @@ export default function Home() {
   const [newTodoTags, setNewTodoTags] = useState("");
   const [newTodoDueDate, setNewTodoDueDate] = useState("");
   const [newTodoRecurrence, setNewTodoRecurrence] = useState("");
-  const [newTodoAttachmentUrl, setNewTodoAttachmentUrl] = useState("");
+  const [newTodoAttachmentUrl, setNewTodoAttachmentUrl] = useState("");  
   /* Manages its own state and lifecycle, allowing for dynamic 
   and interactive user interfaces. This is a key strength of 
   React used within a Next.js framework.
@@ -42,9 +43,10 @@ export default function Home() {
   to your own Next.js API route. */
   const fetchTodos = async () => {
     try {
-      const response = await fetch('/api/todos');
+      setIsLoading(true);
+      const response = await fetch("/api/todos");
       if (!response.ok) {
-        throw new Error('Failed to fetch todos');
+        throw new Error("Failed to fetch todos");
       }
       const data: Todo[] = await response.json();
       setTodos(data);
@@ -64,14 +66,14 @@ export default function Home() {
   const toggleTodo = async (id: string, complete: boolean) => {
     try {
       const response = await fetch(`/api/todos/${id}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ complete }),
       });
       if (!response.ok) {
-        throw new Error('Failed to toggle todo');
+        throw new Error("Failed to toggle todo");
       }
       await fetchTodos();
     } catch (err) {
@@ -83,22 +85,26 @@ export default function Home() {
 
   const handleCreateTodo = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (!newTodoTitle.trim()) {
+      return alert("Title is required");
+    }
+    setIsSaving(true);
     try {
-      const response = await fetch('/api/todos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          title: newTodoTitle, 
+      const response = await fetch("/api/todos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: newTodoTitle,
           complete: false,
           priority: newTodoPriority,
-          tags: newTodoTags.split(',').map(tag => tag.trim()), // Split and trim tags
+          tags: newTodoTags.split(",").map((tag) => tag.trim()), // Convert to array of strings
           dueDate: newTodoDueDate,
           recurrence: newTodoRecurrence,
-          attachmentUrl: newTodoAttachmentUrl
+          attachmentUrl: newTodoAttachmentUrl,
         }),
       });
       if (!response.ok) {
-        throw new Error('Failed to create todo');
+        throw new Error("Failed to create todo");
       }
       // Reset form fields
       setNewTodoTitle("");
@@ -108,61 +114,56 @@ export default function Home() {
       setNewTodoRecurrence("");
       setNewTodoAttachmentUrl("");
       await fetchTodos();
-    } catch (error) {
-      console.error('Error creating todo:', error);
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error(err.message);
+      }
+    } finally {
+      setIsSaving(false);
     }
   };
+  
 
-  const handleEdit = async (
-    id: string, 
-    newTitle: string, 
-    newPriority: string, 
-    newTags: string[], 
-    newDueDate?: string, 
-    newRecurrence?: string, 
-    newAttachmentUrl?: string
-  ) => {
+
+  const handleEdit = async () => {
+    if (!currentTodo) return;
+    setIsSaving(true);
     try {
-      const response = await fetch(`/api/todos/${id}`, {
-        method: 'PUT',
+      const response = await fetch(`/api/todos/${currentTodo.id}`, {
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
-          title: newTitle, 
-          complete: currentTodo?.complete,
-          priority: newPriority,
-          tags: newTags,
-          dueDate: newDueDate,
-          recurrence: newRecurrence,
-          attachmentUrl: newAttachmentUrl
-        }),
+        body: JSON.stringify(currentTodo),
       });
       if (!response.ok) {
-        throw new Error('Failed to update todo');
+        throw new Error("Failed to update todo");
       }
       await fetchTodos();
-    } catch (error) {
-      console.error('Error updating todo:', error);
+    } catch (err) {
+      console.error("Error updating todo:", err);
     } finally {
       setIsEditing(false);
       setCurrentTodo(null);
+      setIsSaving(false);
     }
   };
   
 
   const handleDelete = async (id: string) => {
+    setIsSaving(true);
     try {
-      const response = await fetch(`/api/todos/${id}`, { method: 'DELETE' });
+      const response = await fetch(`/api/todos/${id}`, { method: "DELETE" });
       if (!response.ok) {
-        throw new Error('Failed to delete todo');
+        throw new Error("Failed to delete todo");
       }
       await fetchTodos();
-    } catch (error) {
-      console.error('Error deleting todo:', error);
+    } catch (err) {
+      console.error("Error deleting todo:", err);
+    } finally {
+      setIsSaving(false);
     }
   };
-  
 
   const openEditModal = (todo: Todo) => {
     setCurrentTodo(todo);
@@ -181,11 +182,14 @@ export default function Home() {
     <>
       <header className="flex justify-between items-center mb-4">
         <h1 className="text-2xl">Todos</h1>
-        <Link href="/new" className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700 focus-within:bg-slate-700 outline-none">
+        <Link
+          href="/new"
+          className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700 focus-within:bg-slate-700 outline-none"
+        >
           New
         </Link>
       </header>
-
+      
       {todos.length === 0 && !isLoading && (
         <div>
           <h1 className="text-2xl">Welcome to Next.js Todo. Add Some!</h1>
@@ -279,12 +283,16 @@ export default function Home() {
           <input
             type="text"
             value={currentTodo.title}
-            onChange={(e) => setCurrentTodo({ ...currentTodo, title: e.target.value })}
+            onChange={(e) =>
+              setCurrentTodo({ ...currentTodo, title: e.target.value })
+            }
             placeholder="Title"
           />
           <select
             value={currentTodo.priority}
-            onChange={(e) => setCurrentTodo({ ...currentTodo, priority: e.target.value })}
+            onChange={(e) =>
+              setCurrentTodo({ ...currentTodo, priority: e.target.value })
+            }
           >
             <option value="High">High</option>
             <option value="Medium">Medium</option>
@@ -292,41 +300,42 @@ export default function Home() {
           </select>
           <input
             type="text"
-            value={currentTodo.tags.join(', ')}
-            onChange={(e) => setCurrentTodo({ ...currentTodo, tags: e.target.value.split(',').map(tag => tag.trim()) })}
+            value={currentTodo.tags.join(", ")}
+            onChange={(e) =>
+              setCurrentTodo({
+                ...currentTodo,
+                tags: e.target.value.split(",").map((tag, index) => ({ id: index.toString(), name: tag.trim() })),
+              })
+            }
             placeholder="Tags (comma-separated)"
           />
           <input
             type="date"
-            value={currentTodo.dueDate || ''}
-            onChange={(e) => setCurrentTodo({ ...currentTodo, dueDate: e.target.value })}
-            placeholder="Due Date"
+            value={currentTodo.dueDate || ""}
+            onChange={(e) =>
+              setCurrentTodo({ ...currentTodo, dueDate: e.target.value })
+            }
           />
           <input
             type="text"
-            value={currentTodo.recurrence || ''}
-            onChange={(e) => setCurrentTodo({ ...currentTodo, recurrence: e.target.value })}
-            placeholder="Recurrence"
+            value={currentTodo.recurrence || ""}
+            onChange={(e) =>
+              setCurrentTodo({ ...currentTodo, recurrence: e.target.value })
+            }
           />
           <input
             type="text"
-            value={currentTodo.attachmentUrl || ''}
-            onChange={(e) => setCurrentTodo({ ...currentTodo, attachmentUrl: e.target.value })}
-            placeholder="Attachment URL"
+            value={currentTodo.attachmentUrl || ""}
+            onChange={(e) =>
+              setCurrentTodo({ ...currentTodo, attachmentUrl: e.target.value })
+            }
           />
-          <button 
-            onClick={() => currentTodo && handleEdit(
-              currentTodo.id, 
-              currentTodo.title, 
-              currentTodo.priority, 
-              currentTodo.tags, 
-              currentTodo.dueDate, 
-              currentTodo.recurrence, 
-              currentTodo.attachmentUrl
-            )}
+          <button
+            onClick={handleEdit}
             className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700 focus-within:bg-slate-700 outline-none"
+            disabled={isSaving}
           >
-            Save
+            {isSaving ? "Saving..." : "Save"}
           </button>
         </Modal>
       )}

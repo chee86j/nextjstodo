@@ -11,13 +11,13 @@ model Todo {
   id            String   @id @default(uuid())
   title         String
   complete      Boolean
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
   priority      String   @default("Medium")
-  tags          Tag[]    // Relation to Tag model
   dueDate       DateTime?
   recurrence    String?
   attachmentUrl String?
+  tags          Tag[]    // Relation to Tag model
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Tag {
@@ -26,4 +26,3 @@ model Tag {
   todoId  String
   todo    Todo   @relation(fields: [todoId], references: [id])
 }
-
