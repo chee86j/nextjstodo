@@ -70,6 +70,23 @@ Ensure you have the following installed:
     ```
     Navigate to [http://localhost:3000](http://localhost:3000) to interact with the application.
 
+ 7. **Deploying on Railway.app**
+    - Deploy nextjstodo
+    - Create Postgres database within same production
+      - Copy _DATABASE_PUBLIC_URL variable's value to your .env as
+        `DATABASE_URL='your_database_url_here'`
+    - Delete prisma folder
+    - `npm install prisma --save-dev`
+    - `npx prisma init`
+    - Update the schema.prisma file to define your models (e.g., Todo and Tag) and   ensure the datasource is set to postgresql:
+    - Create a new migration file and apply it locally: 
+      `npx prisma migrate dev --name init`
+    - Generate the Prisma client to interact with the database:
+      `npx prisma generate`
+    - Deploy the migrations to the Railway PostgreSQL database:
+      `npx prisma migrate deploy`
+
+
 ### Project Structure
     - src/app/: Contains application routes and page logic.
         - page.tsx: Displays and manages all todos.
