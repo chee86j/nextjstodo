@@ -1,28 +1,19 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
 model Todo {
-  id            String   @id @default(uuid())
-  title         String
-  complete      Boolean
-  priority      String   @default("Medium")
-  dueDate       DateTime?
-  recurrence    String?
-  attachmentUrl String?
-  tags          Tag[]    // Relation to Tag model
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-}
-
-model Tag {
-  id      String @id @default(uuid())
-  name    String
-  todoId  String
-  todo    Todo   @relation(fields: [todoId], references: [id])
+  id        String   @id @default(uuid())
+  title     String
+  complete  Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
