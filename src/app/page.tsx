@@ -1,7 +1,4 @@
-"use client" 
-/* to run code on the client side. this is necessary 
-for hooks like useEffect and useState 
-*/
+"use client";
 
 import { TodoItem } from "@/components/TodoItem";
 import { Modal } from "@/components/Modal";
@@ -26,26 +23,16 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [currentTodo, setCurrentTodo] = useState<Todo | null>(null);
-  /* Manages its own state and lifecycle, allowing for dynamic 
-  and interactive user interfaces. This is a key strength of 
-  React used within a Next.js framework.
-  */
 
-  /* Define fetchTodos inside the component scope.
-  Client-side data fetching, where you make an HTTP request 
-  to your own Next.js API route. */
+  // Fetch all Todos
   const fetchTodos = async () => {
     try {
-      const response = await fetch('/api/todos');
-      if (!response.ok) {
-        throw new Error('Failed to fetch todos');
-      }
+      const response = await fetch("/api/todos");
+      if (!response.ok) throw new Error("Failed to fetch todos");
       const data: Todo[] = await response.json();
       setTodos(data);
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      }
+      if (err instanceof Error) setError(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -55,49 +42,22 @@ export default function Home() {
     fetchTodos();
   }, []);
 
+  // Toggle a Todo's 'complete' state
   const toggleTodo = async (id: string, complete: boolean) => {
     try {
       const response = await fetch(`/api/todos/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ complete }),
       });
-      if (!response.ok) {
-        throw new Error('Failed to toggle todo');
-      }
-      await fetchTodos();
-    } catch (err) {
-      if (err instanceof Error) {
-        console.error(err.message);
-      }
-    }
-  };
-
-  const handleCreateTodo = async (event: React.FormEvent) => {
-    event.preventDefault();
-    try {
-      const response = await fetch("/api/todos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: newTodoTitle,
-          complete: false,
-          priority: newTodoPriority,
-          dueDate: newTodoDueDate || null,
-        }),
-      });
-      if (!response.ok) throw new Error("Failed to create todo");
-      setNewTodoTitle("");
-      setNewTodoPriority("Medium");
-      setNewTodoDueDate("");
+      if (!response.ok) throw new Error("Failed to toggle todo");
       await fetchTodos();
     } catch (error) {
-      console.error("Error creating todo:", error);
+      console.error("Error toggling todo:", error);
     }
   };
 
+  // Edit a Todo
   const handleEdit = async (id: string, newTitle: string, newPriority: string, newDueDate: string | null) => {
     try {
       const response = await fetch(`/api/todos/${id}`, {
@@ -105,9 +65,9 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: newTitle,
-          priority: newPriority,
+          priority: newPriority || "Medium",
           dueDate: newDueDate || null,
-          complete: currentTodo?.complete,
+          complete: currentTodo?.complete ?? false,
         }),
       });
       if (!response.ok) throw new Error("Failed to update todo");
@@ -119,8 +79,8 @@ export default function Home() {
       setCurrentTodo(null);
     }
   };
-  
 
+  // Delete a Todo
   const handleDelete = async (id: string) => {
     try {
       const response = await fetch(`/api/todos/${id}`, { method: "DELETE" });
@@ -144,45 +104,12 @@ export default function Home() {
       <header className="flex justify-between items-center mb-4">
         <h1 className="text-2xl">Todos</h1>
         <Link
-          className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700 focus-within:bg-slate-700 outline-none"
+          className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700"
           href="/new"
         >
           New
         </Link>
       </header>
-
-      {/* New Todo Form */}
-      <form onSubmit={handleCreateTodo} className="flex gap-2 flex-col mb-4">
-        <input
-          type="text"
-          value={newTodoTitle}
-          onChange={(e) => setNewTodoTitle(e.target.value)}
-          placeholder="Enter a new Todo"
-          className="border border-slate-300 bg-transparent rounded px-2 py-1"
-          required
-        />
-        <select
-          value={newTodoPriority}
-          onChange={(e) => setNewTodoPriority(e.target.value)}
-          className="border border-slate-300 bg-transparent rounded px-2 py-1"
-        >
-          <option value="Low">Low</option>
-          <option value="Medium">Medium</option>
-          <option value="High">High</option>
-        </select>
-        <input
-          type="date"
-          value={newTodoDueDate}
-          onChange={(e) => setNewTodoDueDate(e.target.value)}
-          className="border border-slate-300 bg-transparent rounded px-2 py-1"
-        />
-        <button
-          type="submit"
-          className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700"
-        >
-          Create
-        </button>
-      </form>
 
       {/* Todo List */}
       <ul className="pl-4">
@@ -191,7 +118,7 @@ export default function Home() {
             key={todo.id}
             {...todo}
             toggleTodo={toggleTodo}
-            onEdit={(id, title) => handleEdit(id, title, todo.priority, todo.dueDate)}
+            onEdit={(id, title, priority, dueDate) => handleEdit(id, title, priority, dueDate)}
             onDelete={handleDelete}
           />
           /* with server components built inside Next.js, we don't have 
@@ -206,26 +133,34 @@ export default function Home() {
           the "use client" keyword to run the code on the client side.
           */ 
         ))}
-      </ul>
-
-      {/* Edit Modal */}
-      {isEditing && currentTodo && (
-        <Modal isOpen={isEditing} onClose={() => setIsEditing(false)}>
-          <input
-            type="text"
-            value={currentTodo.title}
-            onChange={(e) => setCurrentTodo({ ...currentTodo, title: e.target.value })}
-          />
-          <button
-            onClick={() => handleEdit(currentTodo.id, currentTodo.title, currentTodo.priority, currentTodo.dueDate)}
-          >
-            Save
-          </button>
-        </Modal>
-      )}
-    </>
-  );
-}
-
-
-          
+        </ul>
+  
+        {/* Edit Modal */}
+        {isEditing && currentTodo && (
+          <Modal isOpen={isEditing} onClose={() => setIsEditing(false)}>
+            <input
+              type="text"
+              value={currentTodo.title}
+              onChange={(e) => setCurrentTodo({ ...currentTodo, title: e.target.value })}
+            />
+            <select
+              value={currentTodo.priority}
+              onChange={(e) => setCurrentTodo({ ...currentTodo, priority: e.target.value })}
+            >
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>
+            <input
+              type="date"
+              value={currentTodo.dueDate || ""}
+              onChange={(e) => setCurrentTodo({ ...currentTodo, dueDate: e.target.value })}
+            />
+            <button onClick={() => handleEdit(currentTodo.id, currentTodo.title, currentTodo.priority, currentTodo.dueDate)}>
+              Save
+            </button>
+          </Modal>
+        )}
+      </>
+    );
+  }

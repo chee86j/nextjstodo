@@ -7,7 +7,7 @@ type TodoItemProps = {
   priority: string; // New field for priority
   dueDate: string | null; // New field for due date
   toggleTodo: (id: string, complete: boolean) => void;
-  onEdit: (id: string, newTitle: string) => void;
+  onEdit: (id: string, newTitle: string, newPriority: string, newDueDate: string | null) => void;
   onDelete: (id: string) => void;
 };
 
@@ -23,22 +23,26 @@ export function TodoItem({
 }: TodoItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
+  const [editedPriority, setEditedPriority] = useState(priority || "Medium");
+  const [editedDueDate, setEditedDueDate] = useState(dueDate || "");
 
+  // Save changes when editing is done
   const handleSave = () => {
-    onEdit(id, editedTitle);
+    onEdit(id, editedTitle, editedPriority, editedDueDate || null);
     setIsEditing(false);
   };
 
   return (
-    <li className="flex flex-col gap-1 p-2 border rounded">
+    <li className="flex flex-col gap-2 p-2 border rounded">
+      {/* Top Section: Checkbox, Title, Buttons */}
       <div className="flex items-center gap-2">
-        {/* Checkbox to toggle completion */}
+        {/* Checkbox to toggle complete status */}
         <input
           id={id}
           type="checkbox"
           className="cursor-pointer peer"
           checked={complete}
-          onChange={() => toggleTodo(id, !complete)} // Toggle the complete state
+          onChange={() => toggleTodo(id, !complete)}
         />
 
         {/* Editable Title */}
@@ -47,7 +51,7 @@ export function TodoItem({
             type="text"
             value={editedTitle}
             onChange={(e) => setEditedTitle(e.target.value)}
-            className="text-slate-300 px-2 py-1 rounded hover:bg-slate-700 focus-within:bg-slate-700"
+            className="text-slate-300 px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 focus:outline-none"
           />
         ) : (
           <label
@@ -58,42 +62,61 @@ export function TodoItem({
           </label>
         )}
 
-        {/* Edit and Save Buttons */}
+        {/* Action Buttons */}
         {isEditing ? (
           <button
             onClick={handleSave}
-            className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700 focus-within:bg-slate-700 outline-none"
+            className="border text-green-400 px-2 py-1 rounded hover:bg-green-700 focus:outline-none"
           >
             Save
           </button>
         ) : (
           <button
             onClick={() => setIsEditing(true)}
-            className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700 focus-within:bg-slate-700 outline-none"
+            className="border text-blue-400 px-2 py-1 rounded hover:bg-blue-700 focus:outline-none"
           >
             Edit
           </button>
         )}
 
-        {/* Delete Button */}
         <button
           onClick={() => onDelete(id)}
-          className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700 focus-within:bg-slate-700 outline-none"
+          className="border text-red-400 px-2 py-1 rounded hover:bg-red-700 focus:outline-none"
         >
           Delete
         </button>
       </div>
 
-      {/* Display Priority and Due Date */}
-      <div className="text-sm text-slate-400 flex gap-2 mt-1">
-        <span>Priority: {priority || "Medium"}</span>
-        <span>
-          Due Date:{" "}
-          {dueDate
-            ? new Date(dueDate).toLocaleDateString()
-            : "No due date"}
-        </span>
-      </div>
+      {/* Priority and Due Date Section */}
+      {isEditing ? (
+        <div className="flex gap-2 mt-2">
+          {/* Priority Selector */}
+          <select
+            value={editedPriority}
+            onChange={(e) => setEditedPriority(e.target.value)}
+            className="border rounded px-2 py-1 bg-slate-800 text-white focus:outline-none"
+          >
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+
+          {/* Due Date Input */}
+          <input
+            type="date"
+            value={editedDueDate}
+            onChange={(e) => setEditedDueDate(e.target.value)}
+            className="border rounded px-2 py-1 bg-slate-800 text-white focus:outline-none"
+          />
+        </div>
+      ) : (
+        <div className="text-sm text-slate-400 flex gap-2 mt-1">
+          <span>Priority: {priority || "Medium"}</span>
+          <span>
+            Due Date: {dueDate ? new Date(dueDate).toLocaleDateString() : "No due date"}
+          </span>
+        </div>
+      )}
     </li>
   );
 }

@@ -79,6 +79,10 @@ Ensure you have the following installed:
     - `npm install prisma --save-dev`
     - `npx prisma init`
     - Update the schema.prisma file to define your models (e.g., Todo and Tag) and   ensure the datasource is set to postgresql:
+            datasource db {
+            provider = "postgresql"
+            url      = env("DATABASE_URL")
+}
     - Create a new migration file and apply it locally: 
       `npx prisma migrate dev --name init`
     - Generate the Prisma client to interact with the database:
