@@ -1,36 +1,111 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Next.js Todo Application
+
+## Overview
+This advanced Todo application is built with Next.js and utilizes Prisma as an ORM to manage SQLite database operations. It offers comprehensive task management capabilities, including prioritization, tagging, and handling optional attributes like due dates and recurrence.
+
+## Features
+- **CRUD Operations:** Create, read, update, and delete todo items efficiently.
+- **Prioritization:** Assign priority levels (High, Medium, Low) to organize tasks based on urgency.
+- **Tagging:** Categorize tasks with customizable tags for better organization.
+- **Due Dates and Recurrence:** Schedule tasks with due dates and set up recurring tasks to keep track of deadlines.
+- **Attachments:** Attach URLs for additional resources directly to tasks.
+- **API Endpoints:** Utilize separate endpoints for fetching all todos and managing specific CRUD operations.
+- **Accessibility:** Features aria-label attributes and semantic HTML for improved usability.
+- **Dynamic UI Updates:** Real-time task updates using optimized state management.
+
+## Technology Stack
+- **Frontend:** Next.js 15.03
+- **Backend:** Prisma 6.00
+- **Database:** SQLite
+- **Styling:** Tailwind CSS 3.4.15
+- **Development Tools:** TypeScript 5, ESLint 9, PostCSS 8, Autoprefixer 10.4.20
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+Ensure you have the following installed:
+- **Node.js (v16 or above)**: Check your version by running `node -v`.
+- **npm or yarn**: Check installation by running `npm -v` or `yarn -v`.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Installation
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/chee86j/nextjstodo.git
+   cd nextjstodo
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Installation
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/chee86j/nextjstodo.git
+   cd nextjstodo
 
-## Learn More
+2. **Install dependencies**
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
 
-To learn more about Next.js, take a look at the following resources:
+3. **Setup the environment**
+    - Duplicate the `.env.example` file and rename it to `.env`.
+    - Update the `DATABASE_URL` to point to your SQLite file. This might look like `file:./dev.db` for a local file.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. **Generate Prisma client**
+    ```bash
+    npx prisma generate
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+5. **Run migrations (if any)**
+    ```bash
+    npx prisma migrate dev
+    ```
 
-## Deploy on Vercel
+ 6. **Run the development server**
+    ```bash
+    npm run dev
+    # or
+    yarn dev
+    ```
+    Navigate to [http://localhost:3000](http://localhost:3000) to interact with the application.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+ 7. **Deploying on Railway.app**
+    - Deploy nextjstodo
+    - Create Postgres database within same production
+      - Copy _DATABASE_PUBLIC_URL variable's value to your .env as
+        `DATABASE_URL='your_database_url_here'`
+    - Delete prisma folder
+    - `npm install prisma --save-dev`
+    - `npx prisma init`
+    - Update the schema.prisma file to define your models (e.g., Todo and Tag) and   ensure the datasource is set to postgresql:
+    - Create a new migration file and apply it locally: 
+      `npx prisma migrate dev --name init`
+    - Generate the Prisma client to interact with the database:
+      `npx prisma generate`
+    - Deploy the migrations to the Railway PostgreSQL database:
+      `npx prisma migrate deploy`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+### Project Structure
+    - src/app/: Contains application routes and page logic.
+        - page.tsx: Displays and manages all todos.
+        - new/page.tsx: Handles the creation of new todos.
+    - src/components/: Contains reusable UI components.
+        - TodoItem.tsx: Represents individual todo items.
+        - Modal.tsx: Provides a modal for editing todos.
+    - prisma/schema.prisma: Defines the database schema.
+    - pages/api/todos: Contains API endpoints for CRUD operations.
+
+### API Endpoints
+    - GET /api/todos: Fetch all todos.
+    - POST /api/todos: Create a new todo.
+    - PUT /api/todos/:id: Update an existing todo.
+    - DELETE /api/todos/:id: Delete a todo.
+
+### Key Enhancements
+    - Added dynamic form validation and error handling to prevent invalid submissions.
+    - Improved state management with isSaving and isLoading flags.
+    - Optimized accessibility with semantic HTML and aria-label attributes.
+    - Enhanced UI for better user experience, including modals for editing todos.
+    - Centralized form reset logic for maintainability.
