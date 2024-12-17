@@ -14,6 +14,8 @@ model Todo {
   id        String   @id @default(uuid())
   title     String
   complete  Boolean
+  priority  String   @default("Medium") // "Low", "Medium", or "High"
+  dueDate   DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

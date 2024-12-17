@@ -21,7 +21,12 @@ export default async function handler(req, res) {
         try {
             const updatedTodo = await prisma.todo.update({
                 where: { id: todoId },
-                data: { title, complete }
+                data: {
+                    title,
+                    complete,
+                    priority: priority || "Medium",
+                    dueDate: dueDate ? new Date(dueDate) : null
+                }
             });
             res.status(200).json(updatedTodo);
         } catch (error) {
