@@ -101,27 +101,41 @@ export default function Home() {
 
   return (
     <>
-      <header className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl">Todos</h1>
+      <header className="flex flex-col items-center gap-4 mb-6 text-center">
+        <h1 className="text-4xl font-bold text-slate-300">
+          🚀 Supercharge Your Productivity
+        </h1>
+        <p className="text-lg text-slate-400 max-w-md">
+          Welcome to the **Next.js Todo App**! Manage tasks effortlessly, set
+          priorities, and never miss a deadline again. Simple. Fast. Efficient.
+        </p>
         <Link
-          className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700"
+          className="border border-blue-500 text-blue-500 px-4 py-2 rounded hover:bg-blue-500 hover:text-white transition"
           href="/new"
         >
-          New
+          ➕ Add a New Task
         </Link>
       </header>
 
       {/* Todo List */}
-      <ul className="pl-4">
-        {todos.map((todo) => (
-          <TodoItem
-            key={todo.id}
-            {...todo}
-            toggleTodo={toggleTodo}
-            onEdit={(id, title, priority, dueDate) => handleEdit(id, title, priority, dueDate)}
-            onDelete={handleDelete}
-          />
-          /* with server components built inside Next.js, we don't have 
+      <section className="max-w-4xl mx-auto">
+        {todos.length === 0 ? (
+          <p className="text-slate-400 text-center">No tasks yet! Add your first one now 🚀</p>
+        ) : (
+          <ul className="space-y-4">
+            {todos.map((todo) => (
+              <TodoItem
+                key={todo.id}
+                {...todo}
+                toggleTodo={toggleTodo}
+                onEdit={(id, title, priority, dueDate) => handleEdit(id, title, priority, dueDate)}
+                onDelete={handleDelete}
+              />
+            ))}
+          </ul>
+        )}
+      </section>
+          {/* with server components built inside Next.js, we don't have 
           to use useQuery or make a fetch request to get the data. We can
           just pass the data to the component as props. As long as we are
           using the app router we have the ability to call server code 
@@ -131,9 +145,7 @@ export default function Home() {
           (useEffect, useState, or event listenser, etc.), it's going to
           run on the server. If you do have client side code, you can use
           the "use client" keyword to run the code on the client side.
-          */ 
-        ))}
-        </ul>
+          */ }
   
         {/* Edit Modal */}
         {isEditing && currentTodo && (
