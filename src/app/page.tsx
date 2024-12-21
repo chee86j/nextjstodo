@@ -16,9 +16,6 @@ type Todo = {
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [newTodoTitle, setNewTodoTitle] = useState("");
-  const [newTodoPriority, setNewTodoPriority] = useState("Medium");
-  const [newTodoDueDate, setNewTodoDueDate] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -41,6 +38,10 @@ export default function Home() {
   useEffect(() => {
     fetchTodos();
   }, []);
+
+  // Separate Todos into Active and Completed
+  const activeTodos = todos.filter((todo) => !todo.complete);
+  const completedTodos = todos.filter((todo) => todo.complete);
 
   // Toggle a Todo's 'complete' state
   const toggleTodo = async (id: string, complete: boolean) => {
@@ -106,8 +107,7 @@ export default function Home() {
           🚀 Supercharge Your Productivity
         </h1>
         <p className="text-lg text-slate-400 max-w-md">
-          Welcome to the **Next.js Todo App**! Manage tasks effortlessly, set
-          priorities, and never miss a deadline again. Simple. Fast. Efficient.
+          Manage tasks effortlessly, set priorities, and track your progress with ease!
         </p>
         <Link
           className="border border-blue-500 text-blue-500 px-4 py-2 rounded hover:bg-blue-500 hover:text-white transition"
@@ -117,13 +117,14 @@ export default function Home() {
         </Link>
       </header>
 
-      {/* Todo List */}
-      <section className="max-w-4xl mx-auto">
-        {todos.length === 0 ? (
-          <p className="text-slate-400 text-center">No tasks yet! Add your first one now 🚀</p>
+      {/* Active Tasks Section */}
+      <section className="max-w-4xl mx-auto mb-8">
+        <h2 className="text-2xl font-bold mb-4">📋 Active Tasks</h2>
+        {activeTodos.length === 0 ? (
+          <p className="text-slate-400 text-center">No active tasks! Add one to get started 🚀</p>
         ) : (
           <ul className="space-y-4">
-            {todos.map((todo) => (
+            {activeTodos.map((todo) => (
               <TodoItem
                 key={todo.id}
                 {...todo}
@@ -134,6 +135,28 @@ export default function Home() {
             ))}
           </ul>
         )}
+      </section>
+
+      {/* Completed Tasks Section */}
+      <section className="max-w-4xl mx-auto">
+        <h2 className="text-2xl font-bold mb-4">✅ Completed Tasks</h2>
+        <div className="bg-slate-800 p-4 rounded">
+          {completedTodos.length === 0 ? (
+            <p className="text-slate-400 text-center">No completed tasks yet! Keep going 💪</p>
+          ) : (
+            <ul className="space-y-4">
+              {completedTodos.map((todo) => (
+                <TodoItem
+                  key={todo.id}
+                  {...todo}
+                  toggleTodo={toggleTodo}
+                  onEdit={(id, title, priority, dueDate) => handleEdit(id, title, priority, dueDate)}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </ul>
+          )}
+        </div>
       </section>
           {/* with server components built inside Next.js, we don't have 
           to use useQuery or make a fetch request to get the data. We can
@@ -146,33 +169,42 @@ export default function Home() {
           run on the server. If you do have client side code, you can use
           the "use client" keyword to run the code on the client side.
           */ }
-  
-        {/* Edit Modal */}
-        {isEditing && currentTodo && (
-          <Modal isOpen={isEditing} onClose={() => setIsEditing(false)}>
-            <input
-              type="text"
-              value={currentTodo.title}
-              onChange={(e) => setCurrentTodo({ ...currentTodo, title: e.target.value })}
-            />
-            <select
-              value={currentTodo.priority}
-              onChange={(e) => setCurrentTodo({ ...currentTodo, priority: e.target.value })}
-            >
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
-            </select>
-            <input
-              type="date"
-              value={currentTodo.dueDate || ""}
-              onChange={(e) => setCurrentTodo({ ...currentTodo, dueDate: e.target.value })}
-            />
-            <button onClick={() => handleEdit(currentTodo.id, currentTodo.title, currentTodo.priority, currentTodo.dueDate)}>
-              Save
-            </button>
-          </Modal>
-        )}
-      </>
-    );
-  }
+      {/* Edit Modal */}
+      {isEditing && currentTodo && (
+        <Modal isOpen={isEditing} onClose={() => setIsEditing(false)}>
+          <h2 className="text-2xl font-bold mb-4">Edit Task</h2>
+          <input
+            type="text"
+            value={currentTodo.title}
+            onChange={(e) => setCurrentTodo({ ...currentTodo, title: e.target.value })}
+            className="border border-slate-300 rounded w-full px-2 py-1 mb-4"
+            placeholder="Update Title"
+          />
+          <select
+            value={currentTodo.priority}
+            onChange={(e) => setCurrentTodo({ ...currentTodo, priority: e.target.value })}
+            className="border border-slate-300 rounded w-full px-2 py-1 mb-4"
+          >
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+          <input
+            type="date"
+            value={currentTodo.dueDate || ""}
+            onChange={(e) => setCurrentTodo({ ...currentTodo, dueDate: e.target.value })}
+            className="border border-slate-300 rounded w-full px-2 py-1 mb-4"
+          />
+          <button
+            onClick={() =>
+              handleEdit(currentTodo.id, currentTodo.title, currentTodo.priority, currentTodo.dueDate)
+            }
+            className="border border-blue-500 text-blue-500 px-4 py-2 rounded hover:bg-blue-500 hover:text-white transition"
+          >
+            Save Changes
+          </button>
+        </Modal>
+      )}
+    </>
+  );
+}
