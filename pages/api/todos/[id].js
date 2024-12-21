@@ -19,7 +19,7 @@ export default async function handler(req, res) {
       res.status(500).json({ message: "Failed to fetch todo", error: error.message });
     }
   } else if (req.method === "PUT") {
-    const { title, complete, priority, dueDate } = req.body;
+    const { title, complete, priority, dueDate, tags } = req.body;
 
     // Input Validation
     if (title && typeof title !== "string") {
@@ -34,9 +34,12 @@ export default async function handler(req, res) {
     if (dueDate && isNaN(Date.parse(dueDate))) {
       return res.status(400).json({ message: "Invalid 'dueDate' value. Must be a valid date." });
     }
+    if (tags && typeof tags !== "string") {
+      return res.status(400).json({ message: "Invalid 'tags' value. Must be a string." });
+    }
 
     try {
-      console.log("Updating todo with data:", { title, complete, priority, dueDate });
+      console.log("Updating todo with data:", { title, complete, priority, dueDate, tags });
 
       // Update the Todo with optional fields
       const updatedTodo = await prisma.todo.update({
@@ -46,6 +49,7 @@ export default async function handler(req, res) {
           ...(complete !== undefined && { complete }),
           ...(priority && { priority }),
           ...(dueDate && { dueDate: new Date(dueDate) }),
+          ...(tags && { tags }), // Store tags as a comma-separated string
         },
       });
 
@@ -69,8 +73,6 @@ export default async function handler(req, res) {
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
-
-
 
 /* Dynamic API Routes: Next.js supports dynamic routing, and this feature extends 
 to API routes. The [id].js file creates a dynamic route (/api/todos/:id), where 

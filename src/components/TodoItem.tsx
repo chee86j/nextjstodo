@@ -4,10 +4,11 @@ type TodoItemProps = {
   id: string;
   title: string;
   complete: boolean;
-  priority: string; // New field for priority
-  dueDate: string | null; // New field for due date
+  priority: string;
+  dueDate: string | null;
+  tags: string[]; // New field for tags
   toggleTodo: (id: string, complete: boolean) => void;
-  onEdit: (id: string, newTitle: string, newPriority: string, newDueDate: string | null) => void;
+  onEdit: (id: string, newTitle: string, newPriority: string, newDueDate: string | null, newTags: string[]) => void; // Updated type
   onDelete: (id: string) => void;
 };
 
@@ -17,6 +18,7 @@ export function TodoItem({
   complete,
   priority,
   dueDate,
+  tags,
   toggleTodo,
   onEdit,
   onDelete,
@@ -25,10 +27,12 @@ export function TodoItem({
   const [editedTitle, setEditedTitle] = useState(title);
   const [editedPriority, setEditedPriority] = useState(priority || "Medium");
   const [editedDueDate, setEditedDueDate] = useState(dueDate || "");
+  const [editedTags, setEditedTags] = useState(tags.join(", ")); // Manage tags as a comma-separated string
 
-  // Save changes when editing is done
+    // Save changes when editing is done
   const handleSave = () => {
-    onEdit(id, editedTitle, editedPriority, editedDueDate || null);
+    const tagsArray = editedTags.split(",").map((tag) => tag.trim());
+    onEdit(id, editedTitle, editedPriority, editedDueDate || null, tagsArray);
     setIsEditing(false);
   };
 
@@ -78,11 +82,7 @@ export function TodoItem({
                 stroke="currentColor"
                 className="w-5 h-5"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5 13l4 4L19 7"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </button>
           ) : (
@@ -120,19 +120,15 @@ export function TodoItem({
               stroke="currentColor"
               className="w-5 h-5"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
       </div>
 
-      {/* Priority and Due Date Section */}
+      {/* Editable Fields */}
       {isEditing ? (
-        <div className="flex gap-2 mt-2">
+        <div className="flex flex-col gap-2 mt-2">
           {/* Priority Selector */}
           <select
             value={editedPriority}
@@ -151,6 +147,14 @@ export function TodoItem({
             onChange={(e) => setEditedDueDate(e.target.value)}
             className="border rounded px-2 py-1 bg-slate-700 text-white focus:outline-none"
           />
+
+          <input
+            type="text"
+            value={editedTags}
+            onChange={(e) => setEditedTags(e.target.value)}
+            className="border rounded px-2 py-1 bg-slate-700 text-white focus:outline-none"
+            placeholder="Add tags (comma-separated)"
+          />
         </div>
       ) : (
         <div className="text-sm text-slate-400 flex gap-2 mt-1">
@@ -158,6 +162,7 @@ export function TodoItem({
           <span>
             Due Date: {dueDate ? new Date(dueDate).toLocaleDateString() : "No due date"}
           </span>
+          <span>Tags: {tags.join(", ") || "No tags"}</span>
         </div>
       )}
     </li>

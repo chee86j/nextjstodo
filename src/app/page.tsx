@@ -12,6 +12,7 @@ type Todo = {
   complete: boolean;
   priority: string;
   dueDate: string | null;
+  tags: string[]; // New field for tags
 };
 
 export default function Home() {
@@ -27,7 +28,12 @@ export default function Home() {
       const response = await fetch("/api/todos");
       if (!response.ok) throw new Error("Failed to fetch todos");
       const data: Todo[] = await response.json();
-      setTodos(data);
+      setTodos(
+        data.map((todo) => ({
+          ...todo,
+          tags: todo.tags ? JSON.parse(todo.tags) : [], // Parse tags from string to array
+        }))
+      );
     } catch (err) {
       if (err instanceof Error) setError(err.message);
     } finally {
@@ -59,7 +65,13 @@ export default function Home() {
   };
 
   // Edit a Todo
-  const handleEdit = async (id: string, newTitle: string, newPriority: string, newDueDate: string | null) => {
+  const handleEdit = async (
+    id: string,
+    newTitle: string,
+    newPriority: string,
+    newDueDate: string | null,
+    newTags: string[]
+  ) => {
     try {
       const response = await fetch(`/api/todos/${id}`, {
         method: "PUT",
@@ -68,6 +80,7 @@ export default function Home() {
           title: newTitle,
           priority: newPriority || "Medium",
           dueDate: newDueDate || null,
+          tags: JSON.stringify(newTags), // Convert tags array to string
           complete: currentTodo?.complete ?? false,
         }),
       });
@@ -107,7 +120,7 @@ export default function Home() {
           🚀 Supercharge Your Productivity
         </h1>
         <p className="text-lg text-slate-400 max-w-md">
-          Manage tasks effortlessly, set priorities, and track your progress with ease!
+          Manage tasks effortlessly, set priorities, assign tags, and track your progress with ease!
         </p>
         <Link
           className="border border-blue-500 text-blue-500 px-4 py-2 rounded hover:bg-blue-500 hover:text-white transition"
@@ -129,7 +142,9 @@ export default function Home() {
                 key={todo.id}
                 {...todo}
                 toggleTodo={toggleTodo}
-                onEdit={(id, title, priority, dueDate) => handleEdit(id, title, priority, dueDate)}
+                onEdit={(id, title, priority, dueDate, tags) =>
+                  handleEdit(id, title, priority, dueDate, tags)
+                }
                 onDelete={handleDelete}
               />
             ))}
@@ -150,7 +165,9 @@ export default function Home() {
                   key={todo.id}
                   {...todo}
                   toggleTodo={toggleTodo}
-                  onEdit={(id, title, priority, dueDate) => handleEdit(id, title, priority, dueDate)}
+                  onEdit={(id, title, priority, dueDate, tags) =>
+                    handleEdit(id, title, priority, dueDate, tags)
+                  }
                   onDelete={handleDelete}
                 />
               ))}
@@ -158,7 +175,7 @@ export default function Home() {
           )}
         </div>
       </section>
-          {/* with server components built inside Next.js, we don't have 
+      {/* with server components built inside Next.js, we don't have 
           to use useQuery or make a fetch request to get the data. We can
           just pass the data to the component as props. As long as we are
           using the app router we have the ability to call server code 
@@ -169,6 +186,7 @@ export default function Home() {
           run on the server. If you do have client side code, you can use
           the "use client" keyword to run the code on the client side.
           */ }
+
       {/* Edit Modal */}
       {isEditing && currentTodo && (
         <Modal isOpen={isEditing} onClose={() => setIsEditing(false)}>
@@ -176,13 +194,17 @@ export default function Home() {
           <input
             type="text"
             value={currentTodo.title}
-            onChange={(e) => setCurrentTodo({ ...currentTodo, title: e.target.value })}
+            onChange={(e) =>
+              setCurrentTodo({ ...currentTodo, title: e.target.value })
+            }
             className="border border-slate-300 rounded w-full px-2 py-1 mb-4"
             placeholder="Update Title"
           />
           <select
             value={currentTodo.priority}
-            onChange={(e) => setCurrentTodo({ ...currentTodo, priority: e.target.value })}
+            onChange={(e) =>
+              setCurrentTodo({ ...currentTodo, priority: e.target.value })
+            }
             className="border border-slate-300 rounded w-full px-2 py-1 mb-4"
           >
             <option value="Low">Low</option>
@@ -192,12 +214,32 @@ export default function Home() {
           <input
             type="date"
             value={currentTodo.dueDate || ""}
-            onChange={(e) => setCurrentTodo({ ...currentTodo, dueDate: e.target.value })}
+            onChange={(e) =>
+              setCurrentTodo({ ...currentTodo, dueDate: e.target.value })
+            }
             className="border border-slate-300 rounded w-full px-2 py-1 mb-4"
+          />
+          <input
+            type="text"
+            value={currentTodo.tags.join(", ")}
+            onChange={(e) =>
+              setCurrentTodo({
+                ...currentTodo,
+                tags: e.target.value.split(",").map((tag) => tag.trim()),
+              })
+            }
+            className="border border-slate-300 rounded w-full px-2 py-1 mb-4"
+            placeholder="Update Tags (comma-separated)"
           />
           <button
             onClick={() =>
-              handleEdit(currentTodo.id, currentTodo.title, currentTodo.priority, currentTodo.dueDate)
+              handleEdit(
+                currentTodo.id,
+                currentTodo.title,
+                currentTodo.priority,
+                currentTodo.dueDate,
+                currentTodo.tags
+              )
             }
             className="border border-blue-500 text-blue-500 px-4 py-2 rounded hover:bg-blue-500 hover:text-white transition"
           >

@@ -6,12 +6,14 @@ import Link from "next/link";
    The /new route is defined in src/app/new/page.tsx.
 */
 
+
 async function createTodo(data: FormData) {
   "use server";
 
   const title = data.get("title")?.valueOf();
   const priority = data.get("priority")?.valueOf();
   const dueDate = data.get("dueDate")?.valueOf();
+  const tags = data.get("tags")?.valueOf();
 
   // Validate the title
   if (typeof title !== "string" || title.trim().length === 0) {
@@ -33,6 +35,12 @@ async function createTodo(data: FormData) {
     }
   }
 
+  // Parse the tags (if provided)
+  const parsedTags =
+    typeof tags === "string" && tags.trim().length > 0
+      ? JSON.stringify(tags.split(",").map((tag) => tag.trim()))
+      : null;
+
   // Create the Todo in the database
   await prisma.todo.create({
     data: {
@@ -40,6 +48,7 @@ async function createTodo(data: FormData) {
       complete: false,
       priority,
       dueDate: parsedDueDate,
+      tags: parsedTags || "[]", // Default to empty array
     },
   });
 
@@ -54,7 +63,7 @@ export default function Page() {
           Create Your Next Todo 🚀
         </h1>
         <p className="text-slate-400">
-          Stay organized and efficient by creating a new task with priority and deadlines.
+          Stay organized and efficient by creating a new task with priority, deadlines, and tags.
         </p>
       </header>
 
@@ -101,6 +110,20 @@ export default function Page() {
             type="date"
             id="dueDate"
             name="dueDate"
+            className="border border-slate-300 bg-transparent rounded px-3 py-2 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        {/* Tags Input */}
+        <div className="flex flex-col">
+          <label htmlFor="tags" className="text-slate-300 mb-1">
+            Tags (comma-separated)
+          </label>
+          <input
+            type="text"
+            id="tags"
+            name="tags"
+            placeholder="e.g., Work, Personal, Urgent"
             className="border border-slate-300 bg-transparent rounded px-3 py-2 outline-none focus:border-blue-500"
           />
         </div>
