@@ -33,9 +33,9 @@ export function TodoItem({
   };
 
   return (
-    <li className="flex flex-col gap-2 p-2 border rounded">
+    <li className="flex flex-col gap-2 p-2 border rounded bg-slate-800">
       {/* Top Section: Checkbox, Title, Buttons */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between">
         {/* Checkbox to toggle complete status */}
         <input
           id={id}
@@ -51,40 +51,83 @@ export function TodoItem({
             type="text"
             value={editedTitle}
             onChange={(e) => setEditedTitle(e.target.value)}
-            className="text-slate-300 px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 focus:outline-none"
+            className="text-slate-300 px-2 py-1 rounded bg-slate-700 focus:outline-none"
           />
         ) : (
           <label
             htmlFor={id}
-            className="cursor-pointer peer-checked:line-through peer-checked:text-slate-500"
+            className={`cursor-pointer ${complete ? "line-through text-slate-500" : "text-white"}`}
           >
             {title}
           </label>
         )}
 
         {/* Action Buttons */}
-        {isEditing ? (
+        <div className="flex gap-2">
+          {isEditing ? (
+            <button
+              onClick={handleSave}
+              className="p-2 text-green-500 hover:bg-green-700 rounded focus:outline-none"
+              title="Save Changes"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="2"
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </button>
+          ) : (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="p-2 text-blue-500 hover:bg-blue-700 rounded focus:outline-none"
+              title="Edit Task"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="2"
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"
+                />
+              </svg>
+            </button>
+          )}
           <button
-            onClick={handleSave}
-            className="border text-green-400 px-2 py-1 rounded hover:bg-green-700 focus:outline-none"
+            onClick={() => onDelete(id)}
+            className="p-2 text-red-500 hover:bg-red-700 rounded focus:outline-none"
+            title="Delete Task"
           >
-            Save
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="2"
+              stroke="currentColor"
+              className="w-5 h-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
           </button>
-        ) : (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="border text-blue-400 px-2 py-1 rounded hover:bg-blue-700 focus:outline-none"
-          >
-            Edit
-          </button>
-        )}
-
-        <button
-          onClick={() => onDelete(id)}
-          className="border text-red-400 px-2 py-1 rounded hover:bg-red-700 focus:outline-none"
-        >
-          Delete
-        </button>
+        </div>
       </div>
 
       {/* Priority and Due Date Section */}
@@ -94,7 +137,7 @@ export function TodoItem({
           <select
             value={editedPriority}
             onChange={(e) => setEditedPriority(e.target.value)}
-            className="border rounded px-2 py-1 bg-slate-800 text-white focus:outline-none"
+            className="border rounded px-2 py-1 bg-slate-700 text-white focus:outline-none"
           >
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
@@ -106,7 +149,7 @@ export function TodoItem({
             type="date"
             value={editedDueDate}
             onChange={(e) => setEditedDueDate(e.target.value)}
-            className="border rounded px-2 py-1 bg-slate-800 text-white focus:outline-none"
+            className="border rounded px-2 py-1 bg-slate-700 text-white focus:outline-none"
           />
         </div>
       ) : (
