@@ -1,0 +1,219 @@
+﻿---
+alwaysApply: true
+---
+
+# Rule: UI & UX Design Principles (Enterprise Detail)
+
+## Scope
+Apply to any PR, spec, or change that affects screens, flows, components, tokens, copy, or interaction behavior across web/desktop/mobile.
+
+## North Star
+Design for user outcomes and sustained flow. The interface should:
+- Minimize friction (fewer clicks, shorter cursor travel, fewer context changes).
+- Maintain orientation (where am I? what can I do next? how do I undo?).
+- Serve both newcomers (learnable) and experts (fast, configurable, keyboardable).
+
+---
+
+## Always Do (with concrete guidance)
+
+### 1) Center the work, not the chrome
+- **Canvas first:** Default to a clear working area; keep toolbars/panels docked, collapsible, and predictable (L or R edge).
+- **Click/scroll budgets:** For frequent tasks, target â‰¤2 clicks and â‰¤1 scroll; for infrequent tasks â‰¤4 clicks.
+- **Proximity:** Keep most-used actions within 600â€"900 px of the primary focus zone on desktop; avoid far-corner travel.
+- **Z-order discipline:** Avoid floating controls that occlude content; use subtle, anchored affordances that donâ€™t overlap task targets.
+
+### 2) Speed is a feature
+- **Keyboard coverage:** Provide shortcuts for top 5 frequent actions and a discoverable command palette with fuzzy search, recents, and type-ahead.
+- **Inline actions:** Prefer on-canvas/inline controls that resolve to tokens (variables/styles), not raw values that drift.
+- **Latency hygiene:** Defer noncritical work, optimistic-update where safe, and prefetch next-likely data on idle.
+
+### 3) Balance newcomers and power users
+- **Progressive disclosure:** Default to labeled, explicit controls; allow â€œcompact/expertâ€ modes that hide labels and increase density.
+- **Reversibility:** Destructive actions require confirmation or an undo window; show precise consequences (â€œDeletes 12 items. Undo for 10 min.â€).
+- **Wayfinding:** Provide first-run hints, hotspots, or a 60-second tour that can be dismissed and rediscovered later.
+
+### 4) Group and name by mental model
+- **Control clustering:** Co-locate related controls (layout/alignment/spacing together). Use consistent order (e.g., X then Y; Lâ†'R; topâ†'bottom).
+- **Naming:** Prefer user-domain terms over implementation terms. Avoid jargon unless itâ€™s the known industry term (and then define it in help).
+
+### 5) Prototype early to validate reality
+- **Fidelity ladder:** Wire (nav + layout) â†' Mid-fi (task flow, key copy) â†' Hi-fi (states, transitions, keyboard). Donâ€™t skip rungs.
+- **Evaluate:** Orientation (can users tell where they are?), motor effort (pointer travel), discoverability (are key actions obvious?), and copy accuracy.
+- **Data realism:** Use believable sample data, realistic error states, and latency simulation.
+
+### 6) Write exact, accountable UX copy
+- **Label â†' Outcome:** â€œCreate,â€ â€œSave,â€ â€œDiscard,â€ â€œExit,â€ â€œDuplicate,â€ â€œPublish,â€ â€œArchive.â€ No vague verbs (â€œManage,â€ â€œProcess,â€ â€œGoâ€).
+- **State first:** Empty, loading, error, success all need clear text, recovery steps, and links to docs/support where relevant.
+- **Tone:** Direct, neutral, and brief. Target Grade 7â€"8 readability for UI strings. Avoid idioms and humor in critical paths.
+- **Errors:** Structure = What happened + What it means + What to do next (+ code/log id when useful).
+
+### 7) Accessibility is foundational
+- **Keyboard:** Logical tab order; visible, non-color focus ring; shortcuts documented. No keyboard traps.
+- **Semantics:** Correct roles/names/states. Label form fields; associate errors with inputs; announce live changes.
+- **Contrast & motion:** Text meets WCAG AA; provide â€œreduce motionâ€-compatible transitions; donâ€™t rely on color alone.
+- **Targets:** Minimum 44Ã--44 px touch targets (mobile) and â‰¥32Ã--32 px (desktop). Spacing respects pointer precision.
+- **Media/alt:** Alt text conveys purpose; decorative graphics are `aria-hidden`. Captions for essential motion content.
+
+### 8) Design System & tokens (single source of truth)
+- **Token taxonomy:** `color.brand.primary.500`, `space.4`, `radius.md`, `elevation.2`, `motion.fast`, `font.size.sm`, etc.
+- **States documented:** default, hover, focus, active/pressed, selected, loading, error, disabled (with tokenized visuals).
+- **Variants:** Keep variant sets minimal and meaningful (e.g., size: sm/md/lg; emphasis: primary/secondary/tertiary/ghost/destructive).
+- **Parity:** Token names match code exports. No hard-coded colors/spacing in components. Use theme APIs for light/dark/HC themes.
+- **RTL/i18n:** Support mirrored layouts and variable string lengths; avoid pixel-locked widths on labels.
+
+### 9) Performance & ergonomics
+- **Budgets:** Set and track FCP/TTI/LCP (product-specific). Avoid layout thrash; reduce reflow-on-input controls.
+- **Skeletons > spinners:** Fill layout with skeletons; avoid spinner farms. Preload above-the-fold assets.
+- **Virtualization:** For large lists, use accessible virtualization with correct item semantics and focus management.
+- **Pointer effort:** Respect Fittsâ€™s Lawâ€"larger targets for frequent actions; keep destructive actions spaced from primary.
+
+### 10) Collaboration & change management
+- **Design RFCs:** For nontrivial changes, ship a 1-pager (problem, goals, non-goals, options, decision, rollout plan, success metrics).
+- **Migration guides:** Provide before/after screenshots, shortcuts, and mappings. Offer temporary toggles when safe.
+- **Measure & revert:** Define success metrics before launch; if regressions exceed thresholds, roll back quickly and document lessons.
+
+### 11) AI & command surfaces (guardrails)
+- **Use cases:** Naming layers, generating placeholder text/data, semantic search, bulk re-labeling. Not a source of truth for destructive ops.
+- **Transparency:** Clarify when output is AI-generated; require human confirmation for irreversible changes. Provide â€œdry-runâ€ previews.
+- **Privacy:** Avoid sending sensitive data; log prompts minimally; provide an â€œomit PIIâ€ switch.
+- **Reliability:** Prefer suggestion mode with inline diffs; allow easy revert.
+
+### 12) Developer handoff = part of UX
+- **Spec:** Include states, tokens, roles, keyboard paths, focus order, validation rules, error messages, and empty states.
+- **Stories:** Provide Storybook (or equivalent) stories for each state/variant with a11y notes and test IDs.
+- **Events & analytics:** Document event names, payloads, and success metrics (e.g., `ui.action.invoked`, `time_on_task`).
+- **Edge cases:** Define max string lengths, overflow behavior, loading + error chaining, and offline/timeout strategies.
+
+---
+
+## Avoid (explicit anti-patterns)
+- Floating, draggable chrome that hides content or breaks muscle memory.
+- â€œOne giant settings panelâ€ that mixes unrelated concepts; prefer localized controls.
+- Vague CTAs (â€œContinueâ€) where branched consequences exist; always preview outcomes.
+- Color-only status; use iconography, text, or patterns in addition.
+- Handoff as screenshots only; missing semantics invariably regress accessibility and behavior.
+
+---
+
+## Accessibility & Inclusive Design (deep checklist)
+- [ ] **Keyboard path** covers all controls; tab order follows visual order; `Esc` closes transient surfaces.
+- [ ] **Focus management** returns to the invoking element after dialogs/sheets; initial focus is meaningful.
+- [ ] **Roles/names/states** accurate for all interactive elements; form errors are programmatically associated.
+- [ ] **Contrast**: text/icons meet WCAG AA; focus ring visible on light/dark themes.
+- [ ] **Motion & seizures**: respect `prefers-reduced-motion`; avoid strobing and high-frequency flashes.
+- [ ] **Cognitive**: plain language; chunk information; consistent icon metaphors and label patterns.
+- [ ] **Time limits**: allow extension or disable timeouts when possible.
+
+---
+
+## Copy & Microcopy (style guide)
+- **Voice:** Clear, concise, and outcome-oriented. Present tense; active voice.
+- **Buttons:** Imperative verb + object when needed (â€œCreate projectâ€). Destructive = explicit (â€œDelete 12 filesâ€).
+- **Empty states:** Explain value, show first step, include a safe example/template.
+- **Placeholders vs help:** Placeholders hint format only; helper text explains constraints/rules.
+- **Numbers & dates:** Use locale-aware formatting; spell out time zones; avoid ambiguous formats (prefer ISO in logs).
+- **Confirmation models:** For destructive or high-impact, use confirm dialogs with concrete consequences and a clear escape hatch.
+
+---
+
+## Prototyping & Validation (how to test)
+- **Tasks:** Define 3â€"5 representative tasks per persona with success criteria and acceptable time-on-task.
+- **Data:** Seed realistic records; include at least one error and one edge case (e.g., long strings, zero/empty, large lists).
+- **Measures:** Completion rate, time on task, major/minor error counts, SUS or confidence (1â€"5). Record observations on orientation/discoverability.
+- **Nonstandard patterns:** If using horizontal scroll/zoom/dense tables, specifically test orientation cues and motor effort.
+- **Resulting actions:** Adjust layout, copy, or control grouping based on findings; document deltas in the RFC.
+
+---
+
+## Design System & Tokens (implementation depth)
+- **Foundations:** Colors (semantic + functional), type scale (rem), spacing (8-pt base), radii, elevation, motion durations/curves.
+- **Theming:** Light/dark/high-contrast palettes derived from semantic tokens; never swap hex codes in components directly.
+- **Naming rules:** Semantic first (`color.bg.surface`), brand second; avoid hard numbers in semantic names except scale indices.
+- **States guidance:** Disabled â‰  low contrast aloneâ€"use combined visual (opacity + cursor + ARIA state) and ensure sufficient readability.
+- **Docs:** Each component page includes anatomy, props, states, accessibility notes, and do/donâ€™t examples.
+
+---
+
+## Performance & Ergonomics (engineering hooks)
+- **Budgets:** Define TTI/LCP goals per surface; enforce via CI where possible (Lighthouse/Bundle size checks).
+- **Skeleton strategy:** Layout-matching skeletons; defer noncritical modules; avoid spinner-only loading.
+- **Virtualization a11y:** Maintain item roles/labels; preserve focus and SR navigation when rows mount/unmount.
+- **Input comfort:** Debounce expensive handlers; never reflow controls during input; keep draggable thresholds forgiving.
+
+---
+
+## Collaboration & Change Management (ops)
+- **Crit cadence:** Speed-round crits (15â€"25 min) focused on foundations or a single component class.
+- **Rollout:** Use feature flags; ship to a pilot cohort; compare metrics; announce in release notes with quick tips/shortcuts.
+- **Reversal protocol:** Pre-commit to rollback criteria; revert fast if expert workflows degrade; summarize learnings in post-mortem.
+
+---
+
+## AI & Command Surfaces (patterns)
+- **Discoverability:** Command palette shows â€œtop actions,â€ â€œrecent,â€ and keyboard hints; supports synonyms and fuzzy matches.
+- **Safety:** For multi-item edits, show a dry-run diff preview; allow â€œapply to selectionâ€ vs â€œapply to all.â€
+- **Observability:** Log action category and scope (no PII). Provide user-visible history with per-step undo.
+
+---
+
+## Developer Handoff (what must be delivered)
+- **Spec pack includes:**
+  - States matrix (per component) with tokens
+  - Keyboard map and focus order
+  - Error/empty/loading examples with copy
+  - Event/analytics table and success metrics
+  - i18n notes (variable strings, max widths)
+  - RTL and responsive breakpoints
+- **QA hooks:** Test IDs; accessibility acceptance test outline; fixtures for long strings, empty sets, errors, and slow network.
+
+---
+
+## Definition of Done (merge gate)
+- [ ] Prototype validated (â‰¥1 newcomer, â‰¥1 expert) with recorded findings
+- [ ] Keyboard and screen reader paths verified; focus visible; no traps
+- [ ] Contrast, motion preferences, target sizes verified
+- [ ] Tokens used for color/type/spacing/motion; no hard-coded values
+- [ ] Component states (default/hover/focus/active/selected/loading/error/disabled) designed and implemented
+- [ ] Copy reviewed for accuracy, brevity, and consequences; confirmations/destructive flows explicit
+- [ ] Analytics events defined and wired; success metrics documented
+- [ ] Handoff notes include semantics, states, tokens, keyboard paths, edge cases
+- [ ] Migration notes and quick-tips included if workflows change
+- [ ] Performance budget checked (bundle size, LCP/TTI targets)
+- [ ] i18n/RTL layout and overflow behaviors reviewed
+
+---
+
+## Quick Prompts for Cursor (ready to paste)
+
+**New screen/component**
+> Create a wire â†' mid-fi â†' hi-fi spec for **[screen/component]**. Include: (1) user/job/success criteria; (2) layout with token references; (3) all states; (4) keyboard paths and focus order; (5) copy (buttons, helper, errors); (6) analytics events; (7) performance notes; (8) a11y notes (roles, names, states); (9) demo data (incl. edge cases); (10) Definition-of-Done checks.
+
+**Refactor legacy UI**
+> Refactor **[component/flow]** to system tokens and documented states. Replace raw values with tokens, add keyboard support and visible focus, rewrite vague CTAs to outcome-based labels, and produce handoff notes (roles, names, states, events). Provide a migration map and quick-tips for users.
+
+**Command palette**
+> Design/extend a command palette for **[area]** with fuzzy search, recents, categories, and keyboard hints. Include safety (dry-run diffs for bulk ops), a11y (roles/labels), and analytics. Return tokenized specs and stories for each command/result state.
+
+**Destructive flows**
+> For **[action]**, draft confirm dialog, undo strategy, copy variants, and telemetry. Include error paths and rate-limit messaging. Provide tests for keyboard-only confirmation and escape hatch.
+
+---
+
+## PR Template Snippet (optional)
+Copy into `.github/pull_request_template.md`:
+
+- Problem & outcome:
+- User tasks impacted:
+- Tokens used / removed:
+- States covered:
+- Keyboard paths & focus:
+- A11y checks (contrast, roles, labels):
+- Copy reviewed (buttons, errors, empty):
+- Analytics events:
+- Performance notes:
+- Migration notes for users:
+- Screens/Storybook links:
+
+
+

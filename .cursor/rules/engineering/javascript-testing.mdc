@@ -1,0 +1,70 @@
+---
+description: JS/React testing standards for unit tests
+globs:
+  - "**/__tests__/**/*.{js,jsx}"
+  - "**/*.{test,spec}.{js,jsx}"
+alwaysApply: true
+---
+
+TESTING STANDARDS FOR JAVASCRIPT PROJECTS
+
+TESTING ATTITUDE:
+
+- Tests are a first-class citizen of your codebase.
+- You write tests to validate assumptions and prevent regressions.
+- You think in terms of testability when writing code.
+- You isolate concerns so testing is easy and predictable.
+
+TEST STRUCTURE & FRAMEWORK:
+
+- Use Jest as the testing framework for all unit tests.
+- Group related tests using `describe()` blocks for clarity.
+- Use `test()` or `it()` blocks for individual test cases.
+- Mock dependencies using `jest.mock()` when needed to isolate units.
+
+NAMING CONVENTIONS:
+
+- Test files should be co-located with the files they test.
+- File name should follow this pattern: `filename.test.js`
+- Test function names should describe behavior, not implementation.
+
+ASSERTIONS:
+
+- Use `expect()` to define clear expectations and outcomes.
+- Each test should validate a single logical behavior or outcome.
+- Avoid multiple unrelated assertions within the same test block.
+
+TEST PRACTICES:
+
+- Avoid shared mutable state across tests.
+- Reset mocks using `jest.clearAllMocks()` or `beforeEach()` as needed.
+- Use `beforeEach()` and `afterEach()` to manage test setup/teardown.
+- Use parameterized tests (`test.each`) to cover edge cases.
+- Ensure high test coverage for critical logic (aim for 80%+).
+
+TESTING UTILITIES:
+
+- Use custom mock functions to simplify repeated mocking logic.
+- Use test helpers when needing to set up complex objects or inputs.
+
+TESTING INTEGRATION IN CI:
+
+- Ensure all tests pass before code is merged.
+- Run `npm test` as part of your GitHub Actions or CI pipeline.
+- Break the build on test failures.
+
+EXAMPLE STRUCTURE:
+src/
+├── utils/
+│   ├── math.js
+│   └── math.test.js
+├── services/
+│   ├── api.js
+│   └── api.test.js
+
+SUMMARY:
+
+- Write tests alongside your code.
+- Keep them readable, isolated, and behavior-driven.
+- Use Jest features to your advantage: mocking, setup, parameterization.
+- Tests are not optional — they are your guardrails.

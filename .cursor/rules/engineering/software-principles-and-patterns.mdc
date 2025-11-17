@@ -1,0 +1,59 @@
+---
+description: Architecture and design patterns for JS/Node/React in this repo
+globs:
+  - frontend/src/**/*.{js,jsx}
+  - backend/src/**/*.js
+alwaysApply: true
+---
+You are an expert in software design principles and patterns for maintainable, scalable, and professional codebases.
+
+## Code Reuse & Maintainability
+- Apply the **DRY (Don’t Repeat Yourself)** principle to avoid duplication and minimize technical debt.
+- **Example:** In the podcast, the host described duplicating refund validation logic in multiple places within a Grocery Outlet app. When business rules changed, missing an update in one location caused $10,000 in incorrect refunds.
+- Centralize logic in shared helpers or utility modules to reduce bugs and simplify updates.
+
+## Code Structure
+- Follow the **Single Responsibility Principle (SRP)**: each function, class, or component should have one clear purpose.
+- **Example:** The refund app contained a single “monster” function that validated refunds, updated records, sent emails, and navigated screens. This made testing and updating difficult and risky.
+- Break large functions into small, focused units. Compose small units into larger workflows when needed for clarity and testability.
+
+## Abstraction & Flexibility
+- Implement the **Adapter / Facade Pattern** to isolate and manage external libraries and dependencies.
+- **Example:** A company heavily used *Moment.js* throughout a million+ line codebase without an adapter layer. When the library became a security risk, replacing it took months of manual work. With an adapter, changes would have been limited to a single file.
+- Wrap libraries in internal utility functions (e.g., `dateUtils.addDays()`) rather than calling libraries directly across files. This makes it easier to swap dependencies in the future.
+
+## Extensibility
+- Write code assuming that requirements will change; build for growth.
+- Favor composition (building small, reusable parts) over inheritance for flexibility.
+- Use interfaces or contracts where appropriate to decouple parts of the system.
+
+## Testability
+- Structure code so individual units (functions, classes) can be tested independently.
+- Minimize side effects and external dependencies within logic to simplify unit testing.
+- **Example:** Refactor complex functions (e.g., the refund processing function) into smaller units so each can be verified on its own.
+
+## Scalability
+- Apply code organization patterns that promote modularization and separation of concerns.
+- Consider Factory, Strategy, or Observer patterns when appropriate to support more complex scaling needs.
+
+## AI-Assisted Development
+- When using AI tools (Copilot, ChatGPT, Cursor), give explicit instructions about patterns (e.g., “apply adapter pattern” or “compose smaller functions”) to avoid generating poor code at scale.
+- **Example:** Without pattern guidance, AI tools can produce code equivalent to a solid junior developer—but may lack architectural discipline.
+
+## Documentation
+- Document any custom patterns, utility libraries, and adapter layers clearly for future maintainers.
+- Include usage examples for shared utilities (e.g., `sendEmail()` wrapper) to standardize how components interact.
+- Maintain high-level diagrams or flowcharts of architecture and key abstractions.
+
+## Performance & Risk Mitigation
+- Recognize that ignoring patterns increases business risk (e.g., bugs, security issues, high refactoring costs).
+- Use patterns to reduce rework, minimize defects, and enable faster onboarding of new developers.
+
+## Resources for Patterns
+- Refer to [dofactory.com](https://www.dofactory.com) for practical examples of patterns across languages (JavaScript, C#, etc.).
+- Read *Clean Code* by Robert C. Martin and *Clean Code in JavaScript* for real-world pattern applications.
+- Study your team’s or company’s internal design standards to align on best practices.
+
+## Key Takeaway
+Patterns are not academic exercises or gatekeeping—they are practical solutions that help you stand on the shoulders of giants, build smarter, and avoid costly mistakes. Master these patterns and you’ll write better, more resilient code.
+

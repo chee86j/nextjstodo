@@ -1,0 +1,114 @@
+---
+description:
+globs: **/*.cs, **/*.sln, **/*.csproj
+alwaysApply: false
+---
+
+# Secure C#/.NET Development
+
+These rules apply to all C#/.NET code in the repository and aim to prevent common security risks through disciplined use of input validation and deserialization, output encoding, and safe APIs.
+
+All violations must include a clear explanation of which rule was triggered and why, to help developers understand and fix the issue effectively.  
+Generated code must not violate these rules. If a rule is violated, a comment must be added explaining the issue and suggesting a correction.
+
+## 1. Validate All external inputs
+
+- **Rule:** Validate all external inputs by manually checking the type, format and size of the input manually or by using libraries like `FluentValidation`.
+  For file validation, utilize MIME Type Validation libraries, like `MimeDetective` or `HeyRed.Mime` to check whether a file's type and content actually matches the expected type.
+
+## 2. Use Parameterized Queries in EntityFramework
+
+- **Rule:** Parameterize queries in EntityFramework using LINQ and `FromSqlInterpolated`.
+- **Unsafe:**
+  ```cs
+  // Vulnerable to SQL Injection
+  var user = dbContext.Users
+    .FromSqlRaw($"SELECT * FROM Users WHERE Username = '{userInput}'")
+    .FirstOrDefault();
+  ```
+- **Safe:**
+  ```cs
+  //Input is interpolated and parameterized internally
+  var user = dbContext.Users
+    .FromSqlInterpolated($"SELECT * FROM Users WHERE Username = {userInput}")
+    .FirstOrDefault();
+  ```
+- **Safe:**
+  ```cs
+  //LINQ is translated into parameterized SQL query
+  var user = dbContext.Users
+      .Where(u => u.Username == userInput)
+      .FirstOrDefault();
+  ```
+
+## 3. Avoid Singleton Dependency Injection On User-Specific Services
+
+- **Rule:** When registering services in ASP.NET Dependency Injection, choose the correct service lifetime to avoid exposing unauthorized users to other users' requests.
+
+- **Unsafe:**
+  ```cs
+  var builder = WebApplication.CreateBuilder(args);
+  // One instance is shared for all users - sensitive data is exposed to others
+  builder.Services.AddSingleton<UserAuthService>();
+  ```
+- **Safe:**
+  ```cs
+  var builder = WebApplication.CreateBuilder(args);
+  // Each created instance is scoped for a single request
+  builder.Services.AddScoped<UserAuthService>();
+  ```
+
+## 4. Avoid Handling Mutable Data in Singletons
+
+- **Rule:** Handling of mutable data in Singleton services should be avoided to prevent data inconsistencies. Ensure thread safety in Singletons to avoid race conditions that can cause logic bypass, for example by escalating privilages in authorization logic.
+
+## 5. Ensure Solution's Project Paths Are Within the Expected Directory Structure
+
+- **Rule:** Check that referenced projects inside .sln files do not point to suspicious project files outside the expected directory structure.
+
+## 6. Use Secure Deserialization Methods
+
+- **Rule:** When deserializing data use type-safe methods to avoid malicious code injection.
+
+- **Unsafe:**
+  ```cs
+  var formatter = new BinaryFormatter(); // No validation of untrusted data
+  using var ms = new MemoryStream(data);
+  return formatter.Deserialize(ms);
+  ```
+- **Safe:**
+  ```cs
+  var options = new JsonSerializerOptions
+  {
+      PropertyNameCaseInsensitive = true
+  };
+  return JsonSerializer.Deserialize<T>(json, options); // Type-safe
+  ```
+
+## 7. Validate and Normalize File Paths
+
+- **Rule:** To prevent file path manipulations, normalize and validate input file paths to prevent access to sensitive files.
+
+- **Unsafe:**
+  ```cs
+  string basePath = "/home/files/";
+  // Dangerous - filename can contain "../../etc/passwd"
+  string fullPath = Path.Combine(basePath, filename);
+  string content = System.IO.File.ReadAllText(fullPath);
+  ```
+- **Safe:**
+  ```cs
+  string basePath = "/home/files/";
+  // Absolute path is resolved and normalized
+  string fullPath = Path.GetFullPath(Path.Combine(basePath, filename));
+  // Ensure the resolved path starts with the base path
+  if (!fullPath.StartsWith(basePath, StringComparison.Ordinal))
+  {
+      return BadRequest("Invalid file path.");
+  }
+  if (!System.IO.File.Exists(fullPath))
+  {
+      return NotFound();
+  }
+  string content = System.IO.File.ReadAllText(fullPath);
+  ```

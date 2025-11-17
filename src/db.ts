@@ -1,20 +1,19 @@
-/* What we are doing belowing is to make sure we only have one 
-instance of Prisma Client in our application. We are doing this
-by creating a global variable and assigning the Prisma Client to
-it. We are also checking if the global variable already has a
-Prisma Client assigned to it. If it does, we will use that one
-instead of creating a new one.
-*/
+/*
+ * Maintain a single Prisma Client instance across hot reloads to prevent
+ * exhausting database connections during development.
+ */
 import { PrismaClient } from '@prisma/client'
 
-const globalForPrisma = global as unknown as {
-    prisma: PrismaClient | undefined
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined
 }
 
-export const prisma = 
-    globalForPrisma.prisma ??
-    new PrismaClient({
-        log: ['query'],
-    })
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    ...(process.env.NODE_ENV === 'development' ? { log: ['query'] } : {}),
+  })
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma
+}
