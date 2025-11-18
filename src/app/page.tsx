@@ -3,8 +3,10 @@ import { TodoItem } from '@/components/TodoItem'
 import { prisma } from '@/db'
 import Link from 'next/link'
 
-function getTodos() {
-  return prisma.todo.findMany()
+async function getTodos() {
+  return prisma.todo.findMany({
+    orderBy: { createdAt: 'desc' },
+  })
 }
 
 async function toggleTodo(id: string, complete: boolean) {
@@ -27,11 +29,20 @@ export default async function Home() {
           New
         </Link>
       </header>
-      <ul className='pl-4'>
-        {todos.map(todo => (
-          <TodoItem key={todo.id} {...todo} toggleTodo={toggleTodo} />
-        ))}
-      </ul>
+      {todos.length === 0 ? (
+        <p className='text-slate-400'>
+          No todos yet.{' '}
+          <Link className='underline decoration-dotted text-slate-200' href='/new'>
+            Start by creating one.
+          </Link>
+        </p>
+      ) : (
+        <ul className='pl-4'>
+          {todos.map(todo => (
+            <TodoItem key={todo.id} {...todo} toggleTodo={toggleTodo} />
+          ))}
+        </ul>
+      )}
     </>
   )
 }
