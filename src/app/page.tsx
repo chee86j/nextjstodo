@@ -1,6 +1,8 @@
 import React from 'react'
 import { TodoItem } from '@/components/TodoItem'
 import { prisma } from '@/db'
+import { parseToggleTodoInput } from '@/lib/validation/todo'
+import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 
 async function getTodos() {
@@ -9,10 +11,24 @@ async function getTodos() {
   })
 }
 
+/*
+ * In classic PERN apps you would hit an Express route, flip a boolean, then
+ * send back JSON. Server actions let us keep that same flow entirely on the
+ * server: validate the payload, run Prisma, then tell Next.js to refresh the
+ * cached home route so the UI reflects the latest data.
+ */
 async function toggleTodo(id: string, complete: boolean) {
   'use server'
 
-  await prisma.todo.update({ where: { id }, data: { complete } })
+  const { id: safeId, complete: nextCompleteValue } = parseToggleTodoInput(id, complete)
+
+  try {
+    await prisma.todo.update({ where: { id: safeId }, data: { complete: nextCompleteValue } })
+    revalidatePath('/')
+  } catch (error) {
+    console.error('Failed to toggle todo', error)
+    throw new Error('Unable to update todo status right now. Please try again.')
+  }
 }
 
 export default async function Home() {
