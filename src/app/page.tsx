@@ -1,7 +1,7 @@
 import React from 'react'
 import { TodoItem } from '@/components/TodoItem'
 import { prisma } from '@/db'
-import { parseToggleTodoInput } from '@/lib/validation/todo'
+import { parseDeleteTodoInput, parseToggleTodoInput } from '@/lib/validation/todo'
 import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 
@@ -31,6 +31,26 @@ async function toggleTodo(id: string, complete: boolean) {
   }
 }
 
+/*
+ * Delete mirrors the toggle flow: validate input on the server, run the Prisma
+ * mutation, then tell Next.js to invalidate the cached list. Treating this as
+ * a server action keeps the client-side component lean and avoids shipping
+ * extra fetch calls to the browser.
+ */
+async function deleteTodo(id: string) {
+  'use server'
+
+  const { id: safeId } = parseDeleteTodoInput(id)
+
+  try {
+    await prisma.todo.delete({ where: { id: safeId } })
+    revalidatePath('/')
+  } catch (error) {
+    console.error('Failed to delete todo', error)
+    throw new Error('Unable to delete todo right now. Please try again.')
+  }
+}
+
 export default async function Home() {
   const todos = await getTodos()
 
@@ -55,7 +75,7 @@ export default async function Home() {
       ) : (
         <ul className='pl-4'>
           {todos.map(todo => (
-            <TodoItem key={todo.id} {...todo} toggleTodo={toggleTodo} />
+            <TodoItem key={todo.id} {...todo} toggleTodo={toggleTodo} deleteTodo={deleteTodo} />
           ))}
         </ul>
       )}

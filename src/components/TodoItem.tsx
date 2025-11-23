@@ -25,15 +25,28 @@ type TodoItemProps = {
   title: string
   complete: boolean
   toggleTodo: (id: string, complete: boolean) => Promise<void>
+  deleteTodo: (id: string) => Promise<void>
 }
 
-export function TodoItem({ id, title, complete, toggleTodo }: TodoItemProps) {
+export function TodoItem({ id, title, complete, toggleTodo, deleteTodo }: TodoItemProps) {
   const [isPending, startTransition] = useTransition()
+  const [isDeleting, startDeleteTransition] = useTransition()
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const nextCompleteState = event.target.checked
     startTransition(() => {
       toggleTodo(id, nextCompleteState)
+    })
+  }
+
+  const handleDelete = () => {
+    const userConfirmedDelete = window.confirm(`Delete "${title}"?`)
+    if (!userConfirmedDelete) {
+      return
+    }
+
+    startDeleteTransition(() => {
+      deleteTodo(id)
     })
   }
 
@@ -48,7 +61,7 @@ export function TodoItem({ id, title, complete, toggleTodo }: TodoItemProps) {
         className='peer h-4 w-4 cursor-pointer accent-slate-300'
         aria-label={`Mark ${title} as ${complete ? 'incomplete' : 'complete'}`}
         onChange={handleChange}
-        disabled={isPending}
+        disabled={isPending || isDeleting}
       />
       <label
         htmlFor={checkboxId}
@@ -56,6 +69,15 @@ export function TodoItem({ id, title, complete, toggleTodo }: TodoItemProps) {
       >
         {title}
       </label>
+      <button
+        type='button'
+        onClick={handleDelete}
+        aria-label={`Delete ${title}`}
+        disabled={isPending || isDeleting}
+        className='text-sm text-red-200 underline decoration-dotted underline-offset-4 transition hover:text-red-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-200 disabled:cursor-not-allowed disabled:opacity-60'
+      >
+        {isDeleting ? 'Deleting…' : 'Delete'}
+      </button>
     </li>
   )
 }

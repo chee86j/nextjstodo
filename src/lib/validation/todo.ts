@@ -16,6 +16,10 @@ export type CreateTodoInput = {
   title: string
 }
 
+export type DeleteTodoInput = {
+  id: string
+}
+
 export function parseToggleTodoInput(id: unknown, complete: unknown): ToggleTodoInput {
   if (typeof id !== 'string' || !todoIdPattern.test(id)) {
     throw new Error('Invalid todo identifier supplied to toggle action.')
@@ -44,4 +48,12 @@ export function parseCreateTodoInput(title: unknown): CreateTodoInput {
   }
 
   return { title: sanitizedTitle }
+}
+
+export function parseDeleteTodoInput(id: unknown): DeleteTodoInput {
+  if (typeof id !== 'string' || !todoIdPattern.test(id)) {
+    throw new Error('Invalid todo identifier supplied to delete action.')
+  }
+
+  return { id }
 }
