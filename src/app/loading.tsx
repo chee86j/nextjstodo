@@ -9,19 +9,29 @@ export default function Loading() {
   const placeholderRows = Array.from({ length: 4 }, (_, index) => index)
 
   return (
-    <section className='space-y-4' aria-busy='true' aria-live='polite'>
-      <header className='flex justify-between items-center mb-2'>
-        <div className='h-8 w-32 rounded bg-slate-700/60' />
-        <div className='h-8 w-16 rounded border border-slate-700/70' />
+    <section
+      className='mx-auto flex max-w-4xl flex-col gap-8 px-4 py-12'
+      aria-busy='true'
+      aria-live='polite'
+    >
+      <header className='space-y-3'>
+        <div className='h-4 w-24 rounded-full bg-white/10' />
+        <div className='h-10 w-72 rounded-full bg-white/10' />
+        <div className='h-4 w-96 max-w-full rounded-full bg-white/10' />
       </header>
-      <ul className='pl-4 space-y-2'>
-        {placeholderRows.map(row => (
-          <li key={row} className='flex items-center gap-3'>
-            <span className='h-4 w-4 rounded border border-slate-700/70' />
-            <span className='h-5 flex-1 rounded bg-slate-700/50' />
-          </li>
-        ))}
-      </ul>
+
+      <div className='rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.9)] backdrop-blur'>
+        <div className='mb-4 h-9 w-full rounded-xl bg-white/10' />
+        <ul className='space-y-3'>
+          {placeholderRows.map(row => (
+            <li key={row} className='flex items-center gap-4'>
+              <span className='h-5 w-5 rounded-md border border-white/15 bg-white/5' />
+              <span className='h-5 flex-1 rounded-full bg-white/10' />
+              <span className='h-5 w-20 rounded-full bg-white/10' />
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   )
 }

@@ -38,15 +38,19 @@ async function createTodo(
 
 export default function NewTodoPage() {
   return (
-    <section className='mx-auto max-w-xl space-y-6'>
-      <header className='space-y-1'>
-        <p className='text-sm uppercase tracking-[0.3em] text-slate-500'>Create</p>
-        <h1 className='text-3xl font-semibold text-slate-100'>Add a new todo</h1>
-        <p className='text-sm text-slate-400'>
-          Titles can stay short; the home list revalidates immediately after save.
+    <main className='mx-auto flex max-w-3xl flex-col gap-8 px-4 py-12'>
+      <header className='space-y-3'>
+        <p className='text-xs uppercase tracking-[0.3em] text-slate-400'>Create</p>
+        <h1 className='text-4xl font-semibold text-white'>Capture a new todo</h1>
+        <p className='max-w-2xl text-sm text-slate-300'>
+          Keep titles concise. We validate input on the server, then refresh your list the moment
+          the record saves—no reload required.
         </p>
       </header>
-      <NewTodoForm createTodoAction={createTodo} />
-    </section>
+
+      <section className='rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_20px_70px_-45px_rgba(0,0,0,0.9)] backdrop-blur'>
+        <NewTodoForm createTodoAction={createTodo} />
+      </section>
+    </main>
   )
 }

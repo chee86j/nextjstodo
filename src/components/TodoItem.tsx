@@ -53,28 +53,31 @@ export function TodoItem({ id, title, complete, toggleTodo, deleteTodo }: TodoIt
   const checkboxId = `todo-${id}`
 
   return (
-    <li className='flex items-center gap-3 py-2'>
+    <li className='flex items-start gap-4 py-4'>
       <input
         id={checkboxId}
         type='checkbox'
         defaultChecked={complete}
-        className='peer h-4 w-4 cursor-pointer accent-slate-300'
+        className='peer mt-1 h-5 w-5 cursor-pointer rounded-md border border-white/20 bg-slate-900 accent-white transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
         aria-label={`Mark ${title} as ${complete ? 'incomplete' : 'complete'}`}
         onChange={handleChange}
         disabled={isPending || isDeleting}
       />
       <label
         htmlFor={checkboxId}
-        className='flex-1 text-lg peer-checked:text-slate-500 peer-checked:line-through'
+        className='flex-1 space-y-2 text-lg font-medium leading-relaxed text-white transition peer-checked:text-slate-500 peer-checked:line-through'
       >
         {title}
+        <span className='block text-xs uppercase tracking-[0.2em] text-slate-400'>
+          {complete ? 'Completed' : 'Active'}
+        </span>
       </label>
       <button
         type='button'
         onClick={handleDelete}
         aria-label={`Delete ${title}`}
         disabled={isPending || isDeleting}
-        className='text-sm text-red-200 underline decoration-dotted underline-offset-4 transition hover:text-red-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-200 disabled:cursor-not-allowed disabled:opacity-60'
+        className='rounded-full border border-red-300/30 px-3 py-1 text-xs font-semibold text-red-100 transition hover:border-red-200/60 hover:bg-red-500/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-200 disabled:cursor-not-allowed disabled:opacity-60'
       >
         {isDeleting ? 'Deleting…' : 'Delete'}
       </button>

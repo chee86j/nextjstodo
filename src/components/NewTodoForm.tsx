@@ -33,8 +33,8 @@ export function NewTodoForm({ createTodoAction }: NewTodoFormProps) {
           autoFocus
           required
           maxLength={120}
-          className='rounded border border-slate-700 bg-slate-900 px-3 py-2 text-base text-slate-100 placeholder:text-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-300'
-          placeholder='Walk the dog, pick up groceries...'
+          className='w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white placeholder:text-slate-500 shadow-[0_10px_35px_-24px_rgba(0,0,0,0.8)] transition focus-visible:border-white/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white'
+          placeholder='Ship landing page, fix navbar, book flights...'
         />
       </label>
       {formState?.error && (
@@ -46,7 +46,7 @@ export function NewTodoForm({ createTodoAction }: NewTodoFormProps) {
         <SubmitButton />
         <Link
           href='/'
-          className='inline-flex items-center justify-center rounded border border-slate-600 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:bg-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-300'
+          className='inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/30 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white'
         >
           Cancel
         </Link>
@@ -62,7 +62,7 @@ function SubmitButton() {
     <button
       type='submit'
       disabled={pending}
-      className='inline-flex items-center justify-center rounded bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-300 disabled:cursor-not-allowed disabled:opacity-70'
+      className='inline-flex items-center justify-center rounded-full border border-white/20 bg-white text-sm font-semibold text-slate-900 transition hover:border-white/40 hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white disabled:cursor-not-allowed disabled:opacity-70'
     >
       {pending ? 'Saving...' : 'Save todo'}
     </button>
