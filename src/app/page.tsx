@@ -1,7 +1,11 @@
 import React from 'react'
 import { TodoItem } from '@/components/TodoItem'
 import { prisma } from '@/db'
-import { parseDeleteTodoInput, parseToggleTodoInput } from '@/lib/validation/todo'
+import {
+  parseDeleteTodoInput,
+  parseToggleTodoInput,
+  parseUpdateTodoInput,
+} from '@/lib/validation/todo'
 import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 
@@ -28,6 +32,24 @@ async function toggleTodo(id: string, complete: boolean) {
   } catch (error) {
     console.error('Failed to toggle todo', error)
     throw new Error('Unable to update todo status right now. Please try again.')
+  }
+}
+
+/*
+ * Renaming mirrors the toggle flow: validate inputs, run Prisma, then revalidate the home route
+ * so every client sees the updated title without needing a manual refresh.
+ */
+async function updateTodo(id: string, title: string) {
+  'use server'
+
+  const { id: safeId, title: safeTitle } = parseUpdateTodoInput(id, title)
+
+  try {
+    await prisma.todo.update({ where: { id: safeId }, data: { title: safeTitle } })
+    revalidatePath('/')
+  } catch (error) {
+    console.error('Failed to update todo title', error)
+    throw new Error('Unable to rename todo right now. Please try again.')
   }
 }
 
@@ -100,7 +122,13 @@ export default async function Home() {
         ) : (
           <ul className='divide-y divide-white/5' aria-live='polite'>
             {todos.map(todo => (
-              <TodoItem key={todo.id} {...todo} toggleTodo={toggleTodo} deleteTodo={deleteTodo} />
+              <TodoItem
+                key={todo.id}
+                {...todo}
+                toggleTodo={toggleTodo}
+                deleteTodo={deleteTodo}
+                updateTodo={updateTodo}
+              />
             ))}
           </ul>
         )}

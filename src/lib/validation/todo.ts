@@ -20,19 +20,12 @@ export type DeleteTodoInput = {
   id: string
 }
 
-export function parseToggleTodoInput(id: unknown, complete: unknown): ToggleTodoInput {
-  if (typeof id !== 'string' || !todoIdPattern.test(id)) {
-    throw new Error('Invalid todo identifier supplied to toggle action.')
-  }
-
-  if (typeof complete !== 'boolean') {
-    throw new Error('Todo completion flag must be a boolean.')
-  }
-
-  return { id, complete }
+export type UpdateTodoInput = {
+  id: string
+  title: string
 }
 
-export function parseCreateTodoInput(title: unknown): CreateTodoInput {
+function normalizeTitle(title: unknown): string {
   if (typeof title !== 'string') {
     throw new Error('Todo title must be provided as plain text.')
   }
@@ -47,7 +40,23 @@ export function parseCreateTodoInput(title: unknown): CreateTodoInput {
     throw new Error('Todo title must be under 120 characters.')
   }
 
-  return { title: sanitizedTitle }
+  return sanitizedTitle
+}
+
+export function parseToggleTodoInput(id: unknown, complete: unknown): ToggleTodoInput {
+  if (typeof id !== 'string' || !todoIdPattern.test(id)) {
+    throw new Error('Invalid todo identifier supplied to toggle action.')
+  }
+
+  if (typeof complete !== 'boolean') {
+    throw new Error('Todo completion flag must be a boolean.')
+  }
+
+  return { id, complete }
+}
+
+export function parseCreateTodoInput(title: unknown): CreateTodoInput {
+  return { title: normalizeTitle(title) }
 }
 
 export function parseDeleteTodoInput(id: unknown): DeleteTodoInput {
@@ -56,4 +65,12 @@ export function parseDeleteTodoInput(id: unknown): DeleteTodoInput {
   }
 
   return { id }
+}
+
+export function parseUpdateTodoInput(id: unknown, title: unknown): UpdateTodoInput {
+  if (typeof id !== 'string' || !todoIdPattern.test(id)) {
+    throw new Error('Invalid todo identifier supplied to update action.')
+  }
+
+  return { id, title: normalizeTitle(title) }
 }
