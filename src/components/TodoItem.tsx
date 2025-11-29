@@ -83,12 +83,12 @@ export function TodoItem({
   const checkboxId = `todo-${id}`
 
   return (
-    <li className='py-4'>
+    <li className='py-4' aria-busy={isMutating}>
       <div className='flex items-start gap-4'>
         <input
           id={checkboxId}
           type='checkbox'
-          defaultChecked={complete}
+          checked={complete}
           className='peer mt-1 h-5 w-5 cursor-pointer rounded-md border border-white/20 bg-slate-900 accent-white transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
           aria-label={`Mark ${title} as ${complete ? 'incomplete' : 'complete'}`}
           onChange={handleToggle}
