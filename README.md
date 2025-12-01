@@ -1,4 +1,11 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Project Overview  
+NextJSTodo is a simple but fully functional To-Do application. It supports creating, editing, deleting, and marking tasks as complete. The goal of this project is to combine modern web technologies — Next.js, TypeScript, Prisma, SQLite, and Tailwind — to build a maintainable, clean, and scalable codebase.  
+
+This project serves as a learning ground for full-stack development, demonstrating how to:  
+- use Next.js for both frontend and backend / API routes  
+- integrate a database via Prisma + SQLite  
+- style a responsive UI using Tailwind CSS  
+- leverage TypeScript for type safety
 
 ## Getting Started
 
