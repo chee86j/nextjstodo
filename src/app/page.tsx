@@ -27,7 +27,13 @@ async function toggleTodo(id: string, complete: boolean) {
   const { id: safeId, complete: nextCompleteValue } = parseToggleTodoInput(id, complete)
 
   try {
-    await prisma.todo.update({ where: { id: safeId }, data: { complete: nextCompleteValue } })
+    await prisma.todo.update({
+      where: { id: safeId },
+      data: {
+        complete: nextCompleteValue,
+        completedAt: nextCompleteValue ? new Date() : null,
+      },
+    })
     revalidatePath('/')
   } catch (error) {
     console.error('Failed to toggle todo', error)
@@ -39,13 +45,13 @@ async function toggleTodo(id: string, complete: boolean) {
  * Renaming mirrors the toggle flow: validate inputs, run Prisma, then revalidate the home route
  * so every client sees the updated title without needing a manual refresh.
  */
-async function updateTodo(id: string, title: string) {
+async function updateTodo(id: string, title: string, dueAtInput: string | null) {
   'use server'
 
-  const { id: safeId, title: safeTitle } = parseUpdateTodoInput(id, title)
+  const { id: safeId, title: safeTitle, dueAt } = parseUpdateTodoInput(id, title, dueAtInput)
 
   try {
-    await prisma.todo.update({ where: { id: safeId }, data: { title: safeTitle } })
+    await prisma.todo.update({ where: { id: safeId }, data: { title: safeTitle, dueAt } })
     revalidatePath('/')
   } catch (error) {
     console.error('Failed to update todo title', error)
@@ -124,7 +130,12 @@ export default async function Home() {
             {todos.map(todo => (
               <TodoItem
                 key={todo.id}
-                {...todo}
+                id={todo.id}
+                title={todo.title}
+                complete={todo.complete}
+                createdAt={todo.createdAt.toISOString()}
+                dueAt={todo.dueAt ? todo.dueAt.toISOString() : null}
+                completedAt={todo.completedAt ? todo.completedAt.toISOString() : null}
                 toggleTodo={toggleTodo}
                 deleteTodo={deleteTodo}
                 updateTodo={updateTodo}

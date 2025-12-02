@@ -14,6 +14,7 @@ export type ToggleTodoInput = {
 
 export type CreateTodoInput = {
   title: string
+  dueAt: Date | null
 }
 
 export type DeleteTodoInput = {
@@ -23,6 +24,7 @@ export type DeleteTodoInput = {
 export type UpdateTodoInput = {
   id: string
   title: string
+  dueAt: Date | null
 }
 
 function normalizeTitle(title: unknown): string {
@@ -43,6 +45,30 @@ function normalizeTitle(title: unknown): string {
   return sanitizedTitle
 }
 
+function parseDueDateInput(rawDueAt: unknown): Date | null {
+  if (rawDueAt === undefined || rawDueAt === null) {
+    return null
+  }
+
+  if (typeof rawDueAt === 'string') {
+    const trimmedValue = rawDueAt.trim()
+
+    if (trimmedValue.length === 0) {
+      return null
+    }
+
+    const parsedDate = new Date(trimmedValue)
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      throw new Error('Please provide a valid due date.')
+    }
+
+    return parsedDate
+  }
+
+  throw new Error('Due date must be provided as a string.')
+}
+
 export function parseToggleTodoInput(id: unknown, complete: unknown): ToggleTodoInput {
   if (typeof id !== 'string' || !todoIdPattern.test(id)) {
     throw new Error('Invalid todo identifier supplied to toggle action.')
@@ -55,8 +81,8 @@ export function parseToggleTodoInput(id: unknown, complete: unknown): ToggleTodo
   return { id, complete }
 }
 
-export function parseCreateTodoInput(title: unknown): CreateTodoInput {
-  return { title: normalizeTitle(title) }
+export function parseCreateTodoInput(title: unknown, dueAt: unknown): CreateTodoInput {
+  return { title: normalizeTitle(title), dueAt: parseDueDateInput(dueAt) }
 }
 
 export function parseDeleteTodoInput(id: unknown): DeleteTodoInput {
@@ -67,10 +93,14 @@ export function parseDeleteTodoInput(id: unknown): DeleteTodoInput {
   return { id }
 }
 
-export function parseUpdateTodoInput(id: unknown, title: unknown): UpdateTodoInput {
+export function parseUpdateTodoInput(
+  id: unknown,
+  title: unknown,
+  dueAt: unknown
+): UpdateTodoInput {
   if (typeof id !== 'string' || !todoIdPattern.test(id)) {
     throw new Error('Invalid todo identifier supplied to update action.')
   }
 
-  return { id, title: normalizeTitle(title) }
+  return { id, title: normalizeTitle(title), dueAt: parseDueDateInput(dueAt) }
 }

@@ -18,10 +18,11 @@ async function createTodo(
   'use server'
 
   const formTitle = formData.get('title')
+  const formDueAt = formData.get('dueAt')
 
   try {
-    const { title } = parseCreateTodoInput(formTitle)
-    await prisma.todo.create({ data: { title } })
+    const { title, dueAt } = parseCreateTodoInput(formTitle, formDueAt)
+    await prisma.todo.create({ data: { title, dueAt } })
   } catch (error) {
     console.error('Failed to create todo', error)
     return {

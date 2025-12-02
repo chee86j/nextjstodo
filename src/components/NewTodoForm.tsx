@@ -37,6 +37,17 @@ export function NewTodoForm({ createTodoAction }: NewTodoFormProps) {
           placeholder='Ship landing page, fix navbar, book flights...'
         />
       </label>
+      <label className='flex flex-col gap-2 text-lg font-medium'>
+        Due date (optional)
+        <input
+          type='datetime-local'
+          name='dueAt'
+          className='w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white shadow-[0_10px_35px_-24px_rgba(0,0,0,0.8)] transition focus-visible:border-white/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white'
+        />
+        <span className='text-xs font-normal text-slate-400'>
+          Add a target so the home view can flag upcoming or overdue items.
+        </span>
+      </label>
       {formState?.error && (
         <p role='alert' className='text-sm text-red-300'>
           {formState.error}

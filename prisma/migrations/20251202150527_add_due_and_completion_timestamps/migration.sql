@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Todo" ADD COLUMN "completedAt" DATETIME;
+ALTER TABLE "Todo" ADD COLUMN "dueAt" DATETIME;
